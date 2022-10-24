@@ -1,0 +1,88 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ComponentImageInfoBox>
+
+@{ 
+    var title = Model.Title;
+    var description = Model.RichText;
+    var image = Model.Image as Image;
+
+    var imageAltText = image != null ? image.AltText : "";
+    var style = Model.Style.First() as ImageInfoStyleDetailBox;
+
+    var imageWidth = style.ImageWidth;
+    var headerColor = style.HeaderColor;
+    var bodyColor = style.TextColor;
+
+    var loadLazily = Model.LoadLazily && !HttpContext.Current.Request.Url.AbsolutePath.Contains("umbraco");
+
+    var imageCols = "col-sm-12 col-md-6";
+    var textCols = "col-sm-12 col-md-6";
+
+    var height = style.Height;
+
+    if (imageWidth == "66%")
+    {
+        imageCols = "col-sm-12 col-md-8";
+        textCols = "col-sm-12 col-md-4";
+    }
+    var guid = Guid.NewGuid();
+}
+
+<div id="image-info-box-@(guid)"class="twg-image-info-box twg-detail-info-box twg-component">
+
+    <style>
+
+        #image-info-box-@(guid) .text-box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            font-family: NewParisSkyline-Regular;
+        }
+        #image-info-box-@(guid) .text-box .title {
+            color: @headerColor;
+            font-size: 26px;
+            font-family: NewParisSkyline-Regular;
+        }
+        #image-info-box-@(guid) .text-box .description {
+            color: @bodyColor;
+        }
+
+        #image-info-box-@(guid) .image-box {
+            height: @(!string.IsNullOrWhiteSpace(height) ? height : "auto");
+        }
+    </style>
+
+    <div class="row">
+        <div class="@textCols pr-md-0 ">
+            <div class="text-box">
+                @if (!string.IsNullOrWhiteSpace(title))
+                {
+                    <div class="title">
+                        @title
+                    </div>
+                }
+                @if (!string.IsNullOrWhiteSpace(description.ToString()))
+                {
+                    <div class="description">
+                        @Html.Raw(description);
+                    </div>
+                }
+            </div>            
+        </div>
+        <div class="@imageCols pl-md-0">
+            @if (image != null)
+            {
+                <div class="image-box">
+                    <img alt="@imageAltText" 
+                         class="@(loadLazily ? "lazy" : "")"
+                         @Html.Raw(loadLazily ?
+                            string.Format("data-src=\"{0}\"", image.Url) :
+                            string.Format("src=\"{0}\"", image.Url)) />
+                                                  
+                </div>                
+            }
+        </div>
+    </div>
+
+</div>
+

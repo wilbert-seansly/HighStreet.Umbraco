@@ -1,0 +1,106 @@
+﻿@using Umbraco.Web.Models;
+@using HighStreet.Web.Models;
+@model SubscriptionFormViewModel
+@{
+
+    var title = Model.Title;
+    var description = Model.Description;
+}
+
+
+    <div class="twg-component subscribe-form">
+        <a id="subscribe"></a>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-title">
+                    @title
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="form-description">
+                    @description
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                @if (TempData["SubscribedSuccessfully"] != null && !string.IsNullOrWhiteSpace(TempData["SubscribedSuccessfully"].ToString()))
+                {
+                    <div class="temp-message alert-success">@TempData["SubscribedSuccessfully"]</div>
+                }
+                <div class="form">
+                    @using (Html.BeginUmbracoForm("Subscribe", "Subscription"))
+                    {
+                        <input type="hidden" value="subscribe" name="Model.Anchor" />
+
+                        <div class="row">
+
+
+                            <div class="col-sm-12">
+                                <div class="editor-label">
+                                    @Html.LabelFor(x => x.Model.Questions)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.EditorFor(x => x.Model.Questions)
+                                </div>
+                                <div class="editor-validation">
+                                    @Html.ValidationMessageFor(x => x.Model.Questions)
+                                </div>
+                            </div>
+
+                            <div class="col-sm-12 col-md-6">
+                                <div class="editor-label">
+                                    @Html.LabelFor(x => x.Model.FirstName)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.EditorFor(x => x.Model.FirstName)
+                                </div>
+                                <div class="editor-validation">
+                                    @Html.ValidationMessageFor(x => x.Model.FirstName)
+                                </div>
+                            </div>
+
+                            <div class="col-sm-12 col-md-6">
+                                <div class="editor-label">
+                                    @Html.LabelFor(x => x.Model.LastName)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.EditorFor(x => x.Model.LastName)
+                                </div>
+                                <div class="editor-validation">
+                                    @Html.ValidationMessageFor(x => x.Model.LastName)
+                                </div>
+                            </div>
+
+                            <div class="col-sm-12">
+                                <div class="editor-label">
+                                    @Html.LabelFor(x => x.Model.EmailAddress)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.EditorFor(x => x.Model.EmailAddress)
+                                </div>
+                                <div class="editor-validation">
+                                    @Html.ValidationMessageFor(x => x.Model.EmailAddress)
+                                </div>
+                            </div>
+
+                            <div class="col-sm-12">
+                                <div class="editor-field checkbox-field">
+                                    @Html.EditorFor(x => x.Model.NewsAndUpdates)
+                                    <div class="editor-label checkbox-label">
+                                        @Html.LabelFor(x => x.Model.NewsAndUpdates)
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-12 col-md-2">
+                                <input type="submit" value="SUBMIT" />
+                            </div>
+
+
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>

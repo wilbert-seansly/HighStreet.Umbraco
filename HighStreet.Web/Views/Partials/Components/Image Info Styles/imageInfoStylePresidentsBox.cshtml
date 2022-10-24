@@ -1,0 +1,44 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ComponentImageInfoBox>
+
+@{ 
+    var presidentsImage = Model.Image;
+    var presidentsDetailTitle = Model.Title;
+    var presidentsDetailSubTitle = Model.SubTitle;
+    var logo = Model.Logo.Url;
+    var style = Model.Style.First() as ImageInfoStylePresidentsBox;
+    var highlightBackgroundColor = style.HighlightBackgroundColor;
+    var detailsTitleColor = style.DetailsTextHeaderColor;
+    var detailsTextColor = style.DetailsTextColor;
+    var detailsBackgroundColor = style.DetailsBackgroundColor;
+
+}
+
+<div class="twg-component twg-image-info-box twg-president-info-box container">
+
+    <div class="row" >
+        <div class="col-sm-12 px-0">
+            <div class="highlight" style="background-color: @(highlightBackgroundColor);">
+                <img class="logo" src="@logo" />
+            </div>
+        </div>
+        
+    </div>
+
+    <div class="details" >
+        <div class="president-image col-sm-6 px-0">
+            <img src="@presidentsImage.Url" />
+            <div class="separator-fill right d-none d-md-block" style="background-color: @detailsBackgroundColor"></div>
+        </div>
+        <div class="col-sm-6 px-0">
+            <div class="president-detail" style="background-color: @detailsBackgroundColor;">
+                <div class="title" style="color: @detailsTitleColor;">
+                    @presidentsDetailTitle
+                </div>
+                <div class="subtitle" style="color: @detailsTextColor;">
+                    @presidentsDetailSubTitle
+                </div>
+            </div>
+            <div class="separator-fill left d-none d-md-block" style="background-color: @detailsBackgroundColor"></div>
+        </div>        
+    </div>
+</div>

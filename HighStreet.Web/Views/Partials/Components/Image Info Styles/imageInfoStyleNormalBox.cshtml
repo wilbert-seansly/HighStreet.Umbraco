@@ -1,0 +1,54 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ComponentImageInfoBox>
+@using Umbraco.Web.Models;
+@{
+    var title = Model.Title;
+    var subtitle = Model.SubTitle;
+    var richText = Model.RichText;
+    var links = Model.Link != null ? Model.Link : null;
+
+
+    var style = Model.Style.First() as ImageInfoStyleNormalBox;
+
+    var backgroundColor = style.BackgroundColor;
+    var textColor = style.TextColor;
+    var logo = Model.Logo as Image;
+
+    var padding = style.Padding;
+}
+
+<div class="twg-image-info-box twg-normal-info-box twg-component" style="background-color:@backgroundColor; color: @textColor;">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="content" style="@(string.IsNullOrEmpty(padding) ? "" : "padding:" + padding + ";")">
+                <div class="title-section info-box-section">
+                    @if (logo != null)
+                    {
+                        var logoAltText = logo.AltText;
+                        <div class="logo">
+                            <img src="@logo.Url" alt="@logoAltText" />
+                        </div>
+                    }
+
+                    <div class="title">
+                        @title
+                    </div>
+                    <div class="sub-title">
+                        @subtitle
+                    </div>
+                </div>
+                <div class="body-section info-box-section">
+                    @Html.Raw(richText)
+                </div>
+                @if (links != null && links.Any())
+                {
+                    var link = links.First();
+                    <div class="link-section info-box-section">
+                        <a href="@link.Link" style="color: @textColor;" class="info-box-link" target="_blank" rel="noreferrer noopener">@link.Caption</a>
+                    </div>
+                }
+            </div>            
+        </div>
+    </div>
+
+</div>

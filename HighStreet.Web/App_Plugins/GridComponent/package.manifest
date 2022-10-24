@@ -1,0 +1,49 @@
+﻿{
+
+  "gridEditors": [
+    {
+      "name": "Component Tile",
+      "alias": "componentTile",
+      "view": "~/App_Plugins/DocTypeGridEditor/Views/doctypegrideditor.html",
+      "render": "~/App_Plugins/DocTypeGridEditor/Render/DocTypeGridEditor.cshtml",
+      "icon": "icon-donate",
+      "config": {
+        "allowedDocTypes": [ "componentTile$" ],
+        "nameTemplate": "",
+        "enablePreview": true,
+        "viewPath": "~/Views/Partials/Components/",
+        "previewViewPath": "~/Views/Partials/Components/componentTile.cshtml",
+        "previewCssFilePath": "/css/admin-css.css",
+        "previewJsFilePath": ""
+      }
+    },
+	{
+		"name": "Full Row Component",
+		"alias": "fullRowComponent",
+		"view": "~/App_Plugins/DocTypeGridEditor/Views/doctypegrideditor.html",
+		"render": "~/App_Plugins/DocTypeGridEditor/Render/DocTypeGridEditor.cshtml",
+		"icon": "icon-donate",
+		"config": {
+			"allowedDocTypes": [ "fullRowComponent$" ],
+			"nameTemplate": "",
+			"enablePreview": true,
+			"viewPath": "~/Views/Partials/Components/",
+			"previewViewPath": "~/Views/Partials/Components/fullRowComponent.cshtml",
+			"previewCssFilePath": "/css/bootstrap.css",
+			"previewJsFilePath": ""
+		}
+	}
+  ],
+
+  "javascript": [
+    "~/App_plugins/DocTypeGridEditor/Js/doctypegrideditor.controllers.js",
+    "~/App_plugins/DocTypeGridEditor/Js/doctypegrideditor.directives.js",
+    "~/App_plugins/DocTypeGridEditor/Js/doctypegrideditor.resources.js",
+    "~/App_plugins/DocTypeGridEditor/Js/doctypegrideditor.services.js"
+  ],
+  
+  
+  "css": [
+	"~/App_Plugins/GridComponent/admin.css"
+  ]
+}

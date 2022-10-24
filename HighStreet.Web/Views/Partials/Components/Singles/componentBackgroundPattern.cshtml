@@ -1,0 +1,12 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ComponentBackgroundPattern>
+@using Umbraco.Web.Models;
+@using ContentModels = Umbraco.Web.PublishedContentModels;
+@{ 
+    var pattern = Model.Pattern;
+    var topMargin = Model.TopMargin;
+    var height = Model.Height;
+}
+
+<div class="background-pattern" style="margin-top:@(topMargin + "px");background-image: url('@pattern.Url');height:@(height + "px");">
+
+</div>

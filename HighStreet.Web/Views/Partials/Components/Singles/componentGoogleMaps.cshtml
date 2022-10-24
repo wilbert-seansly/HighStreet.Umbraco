@@ -1,0 +1,15 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ComponentGoogleMaps>
+@using Umbraco.Web.Models;
+@using ContentModels = Umbraco.Web.PublishedContentModels;
+@{ 
+    var mapsLink = Model.MapsLink;
+    var height = Model.Height;
+    var admin = HttpContext.Current.Request.Url.AbsolutePath.Contains("umbraco");
+}
+
+<div class="twg-component twg-google-maps" style="height:@(height + "px");">
+    @if (!admin)
+    {
+        @Html.Raw(mapsLink)
+    }
+</div>

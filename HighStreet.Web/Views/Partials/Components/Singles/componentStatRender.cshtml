@@ -1,0 +1,94 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ComponentStatRender>
+@{ 
+    var statSlide = Model.StatSlide as SlideWithCustomStats;
+    var statsFolder = statSlide.StatsFolder;
+    var backgroundColor = statSlide.BackgroundColor;    
+    var textcolor = statSlide.TextColor;
+    var title = statSlide.Title;
+    var titleColor = statSlide.TitleTextColor;
+    var guid = Guid.NewGuid();
+    var borderColor = statSlide.BorderColor;
+    var fillBottomUp = statSlide.FillDirection == "Bottom up";
+
+    var backgroundImage = statSlide.Image;
+}
+
+    <div class="twg-component twg-stat-render" style="@(backgroundImage != null ? Html.Raw("background-image:url('"+backgroundImage.Url()+"')") : Html.Raw(""));background-color:@backgroundColor;color:@textcolor;" id="stat-render-@(guid)">
+        @if (statsFolder == null)
+        {
+            @Html.Raw("</div>")
+            return;
+        }
+
+        <style>
+            #stat-render-@(guid) {
+                border-color: @borderColor;
+            }
+        </style>
+
+        @if (fillBottomUp)
+        {
+            <style>
+                #stat-render-@(guid) .stat-row {
+                    border-top: 1px solid;
+                }
+                #stat-render-@(guid) .stat-row:first-child {
+                    border-top: none;
+                }
+            </style>
+        }
+        else
+        {
+            <style>
+                #stat-render-@(guid) .stat-row {
+                    border-bottom: 1px solid;
+                }
+                #stat-render-@(guid) .stat-row:last-child {
+                    border-bottom: none;
+                }
+            </style>
+        }
+
+
+
+        <div class="title-area">
+            <div class="title" style="color:@titleColor;">
+                @title
+            </div>
+        </div>
+        <div class="slide-stats d-lg-none d-flex">
+            <div class="stats-container">
+                @{
+                    var index = 0;
+                    var stats = statsFolder.Children().OfType<SlideStat>();
+                }
+                @foreach (var stat in stats)
+                {
+                    @Html.Raw(index % 2 == 0 ? "<div class='stat-row' style='" + (!string.IsNullOrEmpty(textcolor) ? "border-color: " + borderColor + ";" : "") + "'> " : "");
+                    <div class="stat">
+                        <div class="txt-line-1 @(stat.TextLine1Big ? "stat-big" : "")">@stat.TextLine1</div>
+                        <div class="txt-line-2 @(stat.TextLine2Big ? "stat-big" : "")">@stat.TextLine2</div>
+                    </div>
+                    @Html.Raw(index++ % 2 != 0 ? "</div>" : "");
+                }
+            </div>
+        </div>
+        <div class="slide-stats d-none d-lg-flex">
+            <div class="stats-container">
+                @{ index = fillBottomUp ? stats.Count() % 4 : 0; }
+                @if (fillBottomUp)
+                {@Html.Raw("<div class='stat-row' style='" + (!string.IsNullOrEmpty(textcolor) ? "border-color: " + textcolor + ";" : "") + "'> ")}
+                @foreach (var stat in stats)
+                {
+                    @Html.Raw(index % 4 == 0 ? "<div class='stat-row' style='" + (!string.IsNullOrEmpty(textcolor) ? "border-color: " + textcolor + ";" : "") + "'> " : "");
+                    <div class="stat">
+                        <div class="txt-line-1 @(stat.TextLine1Big ? "stat-big" : "")">@stat.TextLine1</div>
+                        <div class="txt-line-2 @(stat.TextLine2Big ? "stat-big" : "")">@stat.TextLine2</div>
+                    </div>
+                    @Html.Raw(index++ % 4 == 3 ? "</div>" : "");
+                }
+            </div>
+        </div>
+
+    </div>
+

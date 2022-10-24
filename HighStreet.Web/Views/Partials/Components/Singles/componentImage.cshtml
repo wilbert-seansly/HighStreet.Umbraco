@@ -1,0 +1,84 @@
+﻿
+@inherits Umbraco.Web.Mvc.UmbracoViewPage<ComponentImage>
+@using Umbraco.Web.Models;
+@using ContentModels = Umbraco.Web.PublishedContentModels;
+
+@{ 
+    var height = Model.Height;
+    var image = Model.Image as Image;
+    var backgroundSize = string.IsNullOrWhiteSpace(Model.BackgroundSize) ? "cover" : Model.BackgroundSize;
+
+    var extraClasses = Model.ExtraClasses;
+    
+
+
+
+    var loadLazily = Model.LoadLazily && !HttpContext.Current.Request.Url.AbsolutePath.Contains("umbraco");
+    var backgroundImage = Model.BackgroundImage;
+    
+    var useIntrinsicImage = !Model.BackgroundImage;
+}
+
+    <div class="twg-component image @(Model.EnableParallax ? "fadey-optout" : "")">
+
+        @if (image != null)
+        {
+            var guid = Guid.NewGuid();
+            var imgHeight = string.IsNullOrWhiteSpace(height) ? "auto" : height;
+            var altText = string.IsNullOrWhiteSpace(image.AltText) ? Model.AltText : image.AltText;
+            if (useIntrinsicImage)
+            {
+
+                <a class="photoswipe-image" href="@image.Url" itemprop="contentUrl" data-size="@(image.UmbracoWidth)x@(image.UmbracoHeight)">
+                    <img id="twg-image-@guid" class="twg-image @extraClasses @(loadLazily ? "lazy" : "")" alt="@altText" @Html.Raw(loadLazily ? 
+                                                                                        string.Format("data-src=\"{0}\"", image.Url) : 
+                                                                                        string.Format("src=\"{0}\"", image.Url)) />
+                </a>
+
+                <style>
+                    #twg-image-@(guid) {
+                        object-fit: @backgroundSize;
+                        width: 100%;
+                        max-height: @imgHeight;
+                        height: 100%;
+                    }
+                </style>
+
+            }
+            else
+            {
+                <a class="photoswipe-image" href="@image.Url" itemprop="contentUrl" data-size="@(image.UmbracoWidth)x@(image.UmbracoHeight)">
+                    <div id="twg-image-@guid" class="twg-image @extraClasses @(loadLazily ? "lazy-bg" : "")" style="height: @height">
+                        <span class="background-image" role="img" aria-label="@altText"></span>
+                    </div>
+                </a>
+                
+                <style>
+                    #twg-image-@(guid) {
+                        background-image: @Html.Raw(Model.EnableParallax ? "none" : ("url('" + image.Url + "')").ToString());
+                        background-repeat: no-repeat;
+                        background-position: center;
+                        background-size: @backgroundSize;
+                    }
+
+                    #twg-image-@(guid).lazy-bg {
+                       background-image: none;
+                       background-color: #F1F1FA;
+
+                    }
+                </style>
+            }
+
+            if (Model.EnableParallax)
+            {
+                <script>
+                    $(document).ready(function () {
+                        $("#twg-image-@guid").parallax({ imageSrc: '@image.Url' });
+                    })
+                </script>
+            }
+
+            
+        }
+
+    </div>

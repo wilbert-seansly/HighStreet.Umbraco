@@ -1,0 +1,64 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+    Layout = "_Master.cshtml";
+
+    var backgroundColor = Model.Content.HasValue("contentGridBackgroundColor") ? Model.Content.GetPropertyValue<string>("contentGridBackgroundColor") : "initial";
+
+    var settings = Model.Content.AncestorOrSelf(1).GetPropertyValue<IList<IPublishedContent>>("siteSettings").FirstOrDefault();
+
+    var headlineBackgroundColor = Model.Content.HasValue("headlineBackgroundColor") ?
+        Model.Content.GetPropertyValue<string>("headlineBackgroundColor") : "";
+
+    var headlineTextColor = Model.Content.HasValue("headlineTextColor") ?
+        Model.Content.GetPropertyValue<string>("headlineTextColor") : "";
+}
+
+@* the fun starts here *@
+
+    @if(!string.IsNullOrWhiteSpace("headlineBackgroundColor"))
+    {
+        <style>
+                .twg-content-grid h1 {
+                    background-color: @headlineBackgroundColor;
+                }
+        </style>
+    }
+    @if(!string.IsNullOrWhiteSpace("headlineTextColor"))
+    {
+        <style>
+            .twg-content-grid h1 {
+                color: @headlineTextColor;
+            }
+        </style>
+    }
+
+    <style>
+        .twg-content-grid .container{
+            background-color: @backgroundColor;
+        }
+    </style>
+
+    <div class="twg-content-grid">
+        @Html.GetGridHtml(Model.Content, "contentGrid")
+    </div>
+
+@section footerScripts {
+    <script type="text/javascript">
+        
+        $(document).ready(function() {
+           $(".on-click-link-url").click(function() {
+              var link = $(this).attr("data-link-url");
+              window.location.href = link;
+           });
+        });
+        
+    </script>
+  
+  <script>
+      $(document).ready(function() {
+         $(".mouseover-show-overlay").hover(function() {
+             $(this).find(".overlay, .overlay-text").toggleClass("hidden");
+         }) ;
+      });
+  </script>
+}

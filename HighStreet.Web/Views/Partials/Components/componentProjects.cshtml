@@ -1,0 +1,30 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using Umbraco.Web.Models;
+@{
+    var projects = Model.Content.GetPropertyValue<IList<IPublishedContent>>("projects");
+    var headline = Model.Content.GetPropertyValue("headline");
+}
+
+<div class="c-projects-container">
+    
+    <div class="c-headline">@headline</div>
+    
+    @if (projects != null && projects.Any()) 
+    {
+        <div class="c-projects flex">
+            
+            @foreach (var project in projects) 
+            {
+                var projectPage = project.GetPropertyValue<IPublishedContent>("projectPage");
+                var project_url = project != null ? projectPage.Url : "";
+                var image = project.GetPropertyValue<IPublishedContent>("image");
+                var image_url = image != null ? image.Url : "";
+                <a href="@project_url">
+                    <div class="c-project">
+                        <img src="@image_url" />
+                    </div>
+                </a>
+            }
+        </div>
+    }
+</div>

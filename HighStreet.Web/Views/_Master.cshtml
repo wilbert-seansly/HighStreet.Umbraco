@@ -1,0 +1,359 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+    Layout = null;
+
+    var siteRoot = Model.Content.AncestorOrSelf(1);
+
+    var navbar = siteRoot.GetPropertyValue<IList<IPublishedContent>>("navigationBar").FirstOrDefault();
+    var footer = siteRoot.GetPropertyValue<IList<IPublishedContent>>("footer").FirstOrDefault();
+
+    var siteSettings = siteRoot.GetPropertyValue<IList<IPublishedContent>>("siteSettings").FirstOrDefault() as SiteSettings;
+
+    var color = "#000";
+
+    var defaultHeadlineBackgroundColor = siteSettings != null && siteSettings.HasValue("defaultHeadlineBackgroundColor") ?
+            siteSettings.GetPropertyValue<string>("defaultHeadlineBackgroundColor") : "";
+    var defaultHeadlineTextColor = siteSettings != null && siteSettings.HasValue("defaultHeadlineTextColor") ?
+            siteSettings.GetPropertyValue<string>("defaultHeadlineTextColor") : "";
+
+    var baseSeoTitle = "";
+    if (siteSettings != null)
+    {
+        var siteColor = siteSettings.GetPropertyValue<string>("fontColor");
+        color = string.IsNullOrWhiteSpace(siteColor) ? color : siteColor;
+        baseSeoTitle = siteSettings.HasValue("basePageTitle") ? siteSettings.GetPropertyValue<string>("basePageTitle") : "";
+    }
+
+    var seoTitle = Model.Content.HasValue("sEOTitle") ? Model.Content.GetPropertyValue<string>("sEOTitle") : Model.Content.Name;
+    
+    var metaDescription = Model.Content.HasValue("metadataDescription") ? Model.Content.GetPropertyValue<string>("metadataDescription") : Model.Content.Name;
+
+    var metaTags = siteSettings.MetaTags.Children;
+}
+
+@* the fun starts here *@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5">
+    @foreach (var tag in metaTags)
+    {
+        var metaTag = tag as MetaTag;
+        if (metaTag == null) { continue; }
+        <meta name="@metaTag.TagName" content="@metaTag.TagValue" />
+    }
+    <meta name="description" content="@metaDescription" />
+    <title>@(baseSeoTitle)@seoTitle</title>
+
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.png" />
+    <link rel="stylesheet" type="text/css" href="~/css/swiper-bundle.min.css" />
+
+    <link rel="stylesheet" href="~/font-awesome/css/fontawesome.min.css" />
+    <link rel="stylesheet" href="~/font-awesome/css/solid.min.css" />
+    <link rel="stylesheet" href="~/css/fadey-css.css" type="text/css" />
+    <link rel="stylesheet" href="~/css/swiper/swiper.css" type="text/css" />
+    <link rel="stylesheet" href="/css/style.min.css" type="text/css" />
+    <link rel="stylesheet"
+          href="https://unpkg.com/tippy.js@6.2.7/animations/shift-toward.css" />
+
+    @if (!string.IsNullOrWhiteSpace(defaultHeadlineBackgroundColor))
+    {
+        <style>
+                .twg-content-grid h1 {
+                    background-color: @defaultHeadlineBackgroundColor;
+                }
+        </style>
+    }
+    @if (!string.IsNullOrWhiteSpace(defaultHeadlineTextColor))
+    {
+        <style>
+                .twg-content-grid h1 {
+                    color: @defaultHeadlineTextColor;
+                }
+        </style>
+    }
+
+
+    <style>
+            h1 {
+
+            }
+
+            h1 {
+                font-weight: 400;
+            }
+
+            .twg-color,
+            .navbar-light .navbar-nav a.nav-link.twg-color {
+                color: @color;
+            }
+
+    </style>
+
+    <script src="~/Scripts/jquery-3.0.0.min.js"></script>
+    <script src="~/Scripts/popper.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=Array.prototype.find,Promise,Object.assign"></script>
+    <script src="~/Scripts/tippy/tippy-6.2.7.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/swiper-bundle.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/parallax.min.js"></script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-179501271-1"></script>
+
+    <script>
+
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() { dataLayer.push(arguments); }
+
+        gtag('js', new Date());
+
+
+
+        gtag('config', 'UA-179501271-1');
+
+    </script>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="module">
+        import Swiper from "~/Scripts/swiper-bundle.min.js";
+    </script>
+
+    <!-- Core JS file -->
+    <script src="~/Scripts/photoswipe/photoswipe.min.js"></script>
+    <!-- UI JS file -->
+    <script src="~/Scripts/photoswipe/photoswipe-ui-default.min.js"></script>
+
+    <script>
+        var openPhotoSwipe = function (items) {
+            var pswpElement = document.querySelectorAll('.pswp')[0];
+
+            //// build items array
+            //var items = [
+            //    {
+            //        src: 'https://farm2.staticflickr.com/1043/5186867718_06b2e9e551_b.jpg',
+            //        w: 964,
+            //        h: 1024
+            //    },
+            //    {
+            //        src: 'https://farm7.staticflickr.com/6175/6176698785_7dee72237e_b.jpg',
+            //        w: 1024,
+            //        h: 683
+            //    }
+            //];
+
+            // define options (if needed)
+            var options = {
+                // history & focus options are disabled on CodePen
+                history: false,
+                focus: false,
+
+                showAnimationDuration: 300,
+                hideAnimationDuration: 300
+
+            };
+
+            var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, options);
+            gallery.init();
+
+        };
+
+        var sendImageToPhotoSwipe = function (e) {
+            var items = [
+                {
+                    src: e.target.src,
+                    w: e.target.parentElement.dataset.size.split("x")[0],
+                    h: e.target.parentElement.dataset.size.split("x")[1]
+                }
+            ];
+            openPhotoSwipe(items);
+            e.preventDefault();
+        }
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $(".photoswipe-image").click(sendImageToPhotoSwipe);
+        });
+    </script>
+</head>
+
+
+<body class="twg-content twg-color">
+
+
+    @if (navbar != null)
+    {
+        @Html.Partial("~/Views/Partials/Components/componentNavBar.cshtml", navbar);
+    }
+    <main>
+        @RenderBody()
+    </main>
+    @if (footer != null)
+    {
+        @Html.Partial("~/Views/Partials/Components/componentFooter.cshtml", footer);
+    }
+
+
+    @RenderSection("footerScripts", false)
+
+
+    <script type="text/javascript" src="~/Scripts/NavShrink.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $(".c-gallery");
+        });
+    </script>
+
+    <script type="text/javascript">
+            location.hash = '#' + '@TempData["Anchor"]';
+    </script>
+
+    <script>
+        new NavShrink('navbar');
+    </script>
+
+
+
+    <script src="~/Scripts/loadLazily.js" type="text/javascript"></script>
+    <script>
+        $(document).ready(function () {
+            // Add smooth scrolling to all links
+            $("a").on('click', function (event) {
+
+                // Make sure this.hash has a value before overriding default behavior
+                if (this.hash !== "") {
+                    // Prevent default anchor click behavior
+                    event.preventDefault();
+
+                    // Store hash
+                    var hash = this.hash;
+
+                    // Using jQuery's animate() method to add smooth page scroll
+                    // The optional number (800) specifies the number of milliseconds it takes to scroll to the specified area
+                    $('html, body').animate({
+                        scrollTop: $(hash).offset().top
+                    }, 800, function () {
+
+                        // Add hash (#) to URL when done scrolling (default click behavior)
+                        window.location.hash = hash;
+                    });
+                } // End if
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+
+            if (window.document.documentMode) {
+                $(".twg-component").addClass("is-visible");
+            }
+
+            var observer = new IntersectionObserver(function (entries) {
+                for (var i = 0; i < entries.length; i++) {
+                    if (entries[i].isIntersecting) {
+                        $(entries[i].target).addClass("is-visible");
+                    }
+                }
+
+            });
+            $(".twg-component").each(function (i, elem) {
+                observer.observe(elem);
+            });
+        });
+    </script>
+
+    <script>
+        tippy('.swiper-button-prev', {
+            content: "Prev",
+            theme: "light",
+            arrow: true,
+        })
+
+        tippy('.swiper-button-next', {
+            content: "Next",
+            theme: "light",
+            arrow: true,
+        })
+
+        var menuOpen = false;
+    </script>
+
+    <!-- Root element of PhotoSwipe. Must have class pswp. -->
+    <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+        <!-- Background of PhotoSwipe.
+             It's a separate element as animating opacity is faster than rgba(). -->
+        <div class="pswp__bg"></div>
+
+        <!-- Slides wrapper with overflow:hidden. -->
+        <div class="pswp__scroll-wrap">
+
+            <!-- Container that holds slides.
+                PhotoSwipe keeps only 3 of them in the DOM to save memory.
+                Don't modify these 3 pswp__item elements, data is added later on. -->
+            <div class="pswp__container">
+                <div class="pswp__item"></div>
+                <div class="pswp__item"></div>
+                <div class="pswp__item"></div>
+            </div>
+
+            <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+            <div class="pswp__ui pswp__ui--hidden">
+
+                <div class="pswp__top-bar">
+
+                    <!--  Controls are self-explanatory. Order can be changed. -->
+
+                    <div class="pswp__counter"></div>
+
+                    <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                    <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                    <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                    <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                    <!-- Preloader demo https://codepen.io/dimsemenov/pen/yyBWoR -->
+                    <!-- element will get class pswp__preloader--active when preloader is running -->
+                    <div class="pswp__preloader">
+                        <div class="pswp__preloader__icn">
+                            <div class="pswp__preloader__cut">
+                                <div class="pswp__preloader__donut"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                    <div class="pswp__share-tooltip"></div>
+                </div>
+
+                <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+                </button>
+
+                <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+                </button>
+
+                <div class="pswp__caption">
+                    <div class="pswp__caption__center"></div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    
+
+</body>
+
+</html>

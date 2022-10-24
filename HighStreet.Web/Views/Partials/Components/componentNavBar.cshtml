@@ -1,0 +1,341 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<NavBar>
+@using Umbraco.Web.Models;
+@using ContentModels = Umbraco.Web.PublishedContentModels;
+@using System.Text.RegularExpressions;
+@{
+
+    IEnumerable<NavElement> navbarElements = Model.Children().OfType<NavElement>();
+
+    var site = Model.AncestorOrSelf(1) as Site;
+    var settings = site.SiteSettings.FirstOrDefault() as SiteSettings;
+
+    var logoUrl = "";
+
+    List<ContactInfo> contactInfos = new List<ContactInfo>();
+
+    if (settings != null)
+    {
+        var logo = settings.GetPropertyValue<IPublishedContent>("image");
+        logoUrl = logo != null ? logo.Url : logoUrl;
+
+        var contacts = settings.Children.Where(x => x.DocumentTypeAlias == "contacts").ToList();
+        if (contacts.Any())
+        {
+            foreach (var contactInfoChild in contacts.First().Children)
+            {
+                var contactInfo = contactInfoChild as ContactInfo;
+                contactInfos.Add(contactInfo);
+            }
+        }
+    }
+
+
+    var backgroundColorSetting = Model.BackgroundColor;
+    var backgroundColor = string.IsNullOrEmpty(backgroundColorSetting) ? "#fff" : backgroundColorSetting;
+
+    var textColorSetting = Model.TextColor;
+
+    var colorClass = string.IsNullOrWhiteSpace(textColorSetting) ? "twg-color" : "twg-customNav-color";
+
+    var socialLinks = new Dictionary<string, string>();
+    if (settings.HasValue("facebook"))
+    {
+        socialLinks.Add("facebook", settings.Facebook);
+    }
+    if (settings.HasValue("instagram"))
+    {
+        socialLinks.Add("instagram", settings.Instagram);
+    }
+    if (settings.HasValue("twitter"))
+    {
+        socialLinks.Add("twitter", settings.Twitter);
+    }
+    if (settings.HasValue("linkedIn"))
+    {
+        socialLinks.Add("linkedIn", settings.LinkedIn);
+    }
+}
+
+<style>
+    .full-width-nav-background {
+        background-color: @backgroundColor;
+    }
+    .twg-customNav-color {
+        color: @textColorSetting;
+    }
+    .navbar-brand {
+        max-height: 50px;
+        max-width: 80px;
+    }
+    .navbar-collapse {
+        text-align: right;
+    }
+
+
+    .navbar-light .navbar-nav a.nav-link.twg-customNav-color,
+    .twg-customNav-color .btn {
+        color: @textColorSetting;
+    }
+
+
+</style>
+
+@functions
+{
+    private string currentPageTitle = UmbracoContext.Current.PublishedContentRequest.PublishedContent.Name;
+}
+
+<nav id="navbar" class="container-fluid full-width-nav-background twg-navbar @colorClass sticky-top">
+    <div class="clearfix row relative navbar-content">
+        <div class="col-sm-12 nav-content-container px-0">
+            <div class="main-nav">
+                <div class="navbar-hover">
+                    <div class="navbar navbar-light">
+
+                        <button id="nav-menu-toggle" class="btn main-navbar-button" aria-label="Navigation Toggle">
+                            <i class="fa fa-bars navbar-closed" style="font-size:25px;padding:5px;"></i>
+                            <i class="fa fa-times navbar-open" style="font-size: 25px;padding:5px"></i>
+                        </button>
+
+                    </div>
+                    <div class="nav-slide-downs px-0">
+                        <div class="panel" id="navbarSupportedContent">
+                            <ul class="navbar-nav main-navbar-nav ml-auto">
+                                @foreach (var child in navbarElements)
+                                {
+                                    @nav(child, colorClass);
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="logo-container">
+                <a href="/">
+                    <img class="logo" src="~/images/logo-navbar.png" alt="highstreet logo" />
+                </a>
+            </div>
+            
+            <div class="extra-nav">
+                <div class="extra-nav-hover">
+                    <div class="navbar navbar-light">
+                        <button id="extra-nav-menu-toggle" class="btn main-navbar-button" aria-label="Contact Info toggle">CONTACT</button>
+                    </div>
+
+                    @{
+                        var hasSocialLinks = socialLinks.Any();
+                    }
+
+                    @if (contactInfos.Any() || hasSocialLinks)
+                    {
+                        <div id="extra-navRealignment" class="">
+                            <div class="panel" id="extra-navSupportedContent">
+
+                                <div class="aligned-right">
+                                    <ul class="navbar-nav extra-navbar-nav ml-auto">
+                                        @{ 
+                                            var i = 0;
+                                        }
+                                        @foreach (var contactInfo in contactInfos)
+                                        {
+                                            <li class="extra-nav-item @(i > 0 ? "border-top" : "")">
+                                                <span class="extra-nav-title">@contactInfo.Label.ToUpper()</span>
+                                                <a class="nav-link phone" href="tel:@contactInfo.ContactPhone">@Regex.Replace(contactInfo.ContactPhone, @"(\d{1})(\d{3})(\d{3})(\d{4})", "+$1 $2.$3.$4")</a>
+                                                <a class="nav-link" href="mailto:@contactInfo.ContactEmail">@contactInfo.ContactEmail</a>
+                                            </li>
+                                            i++;
+                                        }
+
+                                        @if (hasSocialLinks)
+                                        {
+                                            <li class="extra-nav-item @(contactInfos.Any() ? "border-top" : "")">
+                                                <div>Follow us:</div>
+                                                <div>
+                                                    @foreach (KeyValuePair<string, string> entry in socialLinks)
+                                                    {
+                                                        <a class="social-icon-link" href="@entry.Value" target="_blank" rel="noreferrer noopener"><img class="social-icon" src="~/images/social-icons/@(entry.Key).png" /></a>
+                                                    }
+                                                </div>
+                                            </li>
+                                        }
+
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+
+                </div>
+            </div>
+
+        </div>
+
+        
+        
+    </div>
+</nav>
+
+@helper nav(NavElement element, string colorClass)
+{
+
+    var linkedPage = element.Page;
+    var navElementName = string.IsNullOrWhiteSpace(element.DisplayName) ? element.Name : element.DisplayName;
+
+
+    var linkedPageName = linkedPage != null ? linkedPage.Name : "";
+    var url = linkedPage != null ? linkedPage.Url : "";
+    var isActive = linkedPageName == currentPageTitle;
+
+    var hasDropDown = element.Children().Any();
+    var className = isActive ? "active" : "";
+    className += hasDropDown ? "has-dropdown" : "";
+    var subClassName = hasDropDown ? "" : "";
+    var subMenuId = Guid.NewGuid().ToString();
+    var color = element.Color;
+    var attributes = hasDropDown ? new HtmlString("role=\"button\" aria-haspopup=\"true\" aria-expanded=\"false\"") : new HtmlString("");
+    var guid = Guid.NewGuid();
+    
+    var showColorOnHover = !element.AlwaysShowColor;
+
+<li class="nav-item @className">
+
+    <style>
+        #nav-link-@(guid) @(showColorOnHover ? ":hover" : "") {
+            color: @color;
+        }
+    </style>    
+
+    @if (hasDropDown)
+    {
+        <div id="nav-link-@(guid)" class="nav-link @subClassName @colorClass collapsed" @attributes data-toggle="collapse" data-target="#sub-menu-@(subMenuId)">@navElementName   <i class="fa fa-chevron-down"></i></div>
+        <div class="sub-menu collapse show" id="sub-menu-@(subMenuId)">
+            @foreach (var child in element.Children().OfType<SubNav>())
+            {
+                var childGuid = Guid.NewGuid();
+                var childLinkedPage = child.Page;
+                var childNavElementName = string.IsNullOrWhiteSpace(child.DisplayName) ? child.Name : child.DisplayName;
+                var childLinkedPageName = childLinkedPage != null ? childLinkedPage.Name : "";
+                var childUrl = childLinkedPage != null ? childLinkedPage.Url : "";
+                var childIsActive = childLinkedPageName == currentPageTitle;
+                var childClassName = childIsActive ? "active" : "";
+                var childColor = child.Color;
+
+                <style>
+                    #nav-link-@(childGuid):hover {
+                        color:@childColor;
+                    }
+                </style>
+
+                <a id="nav-link-@(childGuid)" class="nav-link" href="@childUrl">@childNavElementName</a>
+
+            }
+        </div>
+    }
+    else
+    {
+        <a id="nav-link-@(guid)" class="nav-link @subClassName @colorClass" href="@url" @attributes>@(navElementName) </a>
+    }
+
+</li>
+}
+
+<script>
+
+    const nav = document.getElementById("navbarSupportedContent")
+    nav.style.display = 'block';
+    var leftMenu, rightMenu;
+    leftMenu = tippy('.navbar-hover',
+        {
+            content: nav,
+            allowHTML: true,
+            arrow: false,
+            interactive: true,
+            interactiveBorder: 0,
+            offset: [0, 0],
+            maxWidth: 'none',       
+            placement: 'bottom-start',
+            animation: 'shift-toward',
+            trigger: 'mouseenter click',
+            popperOptions: {
+                modifiers: [
+                    {
+                        name: 'preventOverflow',
+                        options: {
+                            padding: 0
+                        }
+                    },
+                    {
+                        name: 'flip',
+                        options: {
+                            padding: 0,
+                            flipVariations: false
+                        }
+                    }
+                ]
+            },
+            onHide: function(instance) {
+                $(".main-nav .tippy-box").removeClass("loaded");
+            },
+            onShown: function(instance) {
+                $(".main-nav .tippy-box, .navbar-hover").addClass("loaded");
+            },
+            onHidden: function(instance) {
+                $(".navbar-hover").removeClass("loaded");
+                menuOpen = false;
+            },
+            onShow: function(instance) {
+                menuOpen = true;
+                rightMenu.hide();
+            }
+        })[0];
+
+    const extraNav = document.getElementById("extra-navRealignment")
+    extraNav.style.display = 'block';
+    rightMenu = tippy('.extra-nav-hover',
+        {
+            content: extraNav,
+            allowHTML: true,
+            arrow: false,
+            interactive: true,
+            interactiveBorder: 0,
+            offset: [0, 0],
+            maxWidth: 'none',
+            placement: 'bottom-end',
+            animation: 'shift-toward',
+            trigger: 'mouseenter click',
+            popperOptions: {
+                modifiers: [
+                    {
+                        name: 'preventOverflow',
+                        options: {
+                            padding: 0
+                        }
+                    },
+                    {
+                        name: 'flip',
+                        options: {
+                            padding: 0,
+                            flipVariations: false,
+                        }
+                    }
+                ]
+            },
+            onHide: function(instance) {
+                $(".extra-nav .tippy-box").removeClass("loaded");
+            },
+            onShown: function(instance) {
+                $(".extra-nav .tippy-box, .extra-nav-hover").addClass("loaded");
+            },
+            onHidden: function(instance) {
+                $(".extra-nav-hover").removeClass("loaded");
+                menuOpen = false;
+            },
+            onShow: function(instance) {
+                menuOpen = true;
+                leftMenu.hide();
+            }
+        })[0];
+
+</script>

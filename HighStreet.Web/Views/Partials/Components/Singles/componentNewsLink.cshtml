@@ -1,0 +1,31 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using Umbraco.Web.Models;
+
+@{
+    var links = Model.Content.GetPropertyValue<RelatedLinks>("link");
+
+    var image = Model.Content.GetPropertyValue<IPublishedContent>("image");
+    
+    var image_url = image != null ? image.Url : "";
+
+}
+
+@if (links == null || !links.Any()) 
+{
+    return;
+}
+@{
+
+    var link = links.First();
+
+}
+<div class="c-news-link">
+    <a href="@link.Link">
+        <div class="c-news-link-content">
+            <img src="@image_url" />
+            <div class="link-title">
+                <div class="title-text">@link.Caption</div>
+            </div>
+        </div>
+    </a>
+</div>

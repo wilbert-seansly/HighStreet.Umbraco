@@ -1,0 +1,50 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ComponentImageInfoBox>
+
+@{
+    var image = Model.Image;
+    var title = Model.Title;
+    var style = Model.Style.First() as ImageInfoStyleHomePage;
+    var hoverBackgroundColor = style.HoverBackgroundColor;
+    var backgroundColor = style.BackgroundColor;
+    var guid = Guid.NewGuid();
+    var link = Model.Link != null && Model.Link.Count() > 0 ? Model.Link.First() : null;
+}
+
+<style>
+    #box-@(guid) {
+        background-color: @backgroundColor;
+
+    }
+    #box-@(guid):hover {
+        background-color: @hoverBackgroundColor;
+    }
+</style>
+
+<div class="twg-image-info-box twg-homepage-info-box">
+
+    <div id="box-@guid" class="box">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="image">
+                    <img src="@image.Url"/>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="box-content">
+                    <div class="title">
+                        @title
+                    </div>
+                    @if (link != null)
+                    {
+                        <div class="link">
+                            <a href="@link.Link" target="@(link.NewWindow ? "_blank" : "")">@link.Caption</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+        
+    
+   
+</div>

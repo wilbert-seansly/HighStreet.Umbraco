@@ -1,0 +1,42 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ComponentStatColumn>
+
+@{ 
+    var statFolder = Model.StatsFolder;
+    var title = Model.Title;
+    var textColor = Model.TextColor;
+    var borderColor = Model.BorderColor;
+    var backgroundColor = Model.BackgroundColor;
+
+    var stats = statFolder.Children().OfType<SlideStat>();
+}
+
+<div class="twg-component twg-stat-column">
+    <div class="slide-stats" style="background-color: @backgroundColor;">
+        <div class="stats-container no-border">
+            <div class="stat-row center">
+                <div class="txt-line-1 title" style="color: @textColor">@title</div>
+            </div>
+            @foreach (var stat in stats)
+            {
+                var statImage = stat.Image as Image;                                
+                <div class="border" style="color: @borderColor;"></div>
+                <div class="stat-row center">
+                    <div class="stat" style="color: @textColor">
+
+                        @if (statImage == null)
+                        {
+
+                            <div class="txt-line-1 @(stat.TextLine1Big ? "stat-big" : "")">@stat.TextLine1</div>
+                            <div class="txt-line-2 @(stat.TextLine2Big ? "stat-big" : "")">@stat.TextLine2</div>
+                        } else
+                        {
+                            var alt = statImage.AltText;
+                            <img src="@statImage.Url" alt="@stat.ImageAltText" />
+                        }
+
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,57 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ComponentPackeryGallery>
+@using Umbraco.Web.Models;
+@{ 
+    var packeryGallery = Model.PackeryGallery as PackeryGallery;
+
+    var images = packeryGallery != null ? (packeryGallery.Children) : new List<PackeryGalleryImage>();
+
+}
+
+<div class="packery-gallery twg-component">
+    @{ 
+
+    }
+
+    @foreach (var image in images)
+    {
+        var pimage = image as PackeryGalleryImage;
+
+        var text = pimage.OverlayText;
+
+        if (pimage == null || pimage.Image == null)
+        {
+            continue;
+        }
+
+        var mediaImage = pimage.Image as Image;
+        var altText = mediaImage.AltText;
+
+        var classes = pimage.Classes;
+        <div class="gallery-image @(classes) twg-component">
+            <div class="content">
+                <img src="@mediaImage.Url" alt="@altText" />
+                @if (!string.IsNullOrWhiteSpace(text.ToString()))
+                {
+                    <div class="gallery-overlay">@Html.Raw(text)</div>
+                }
+            </div>
+        </div>
+        
+    }
+  </div>
+
+<script src="~/Scripts/packery.min.js"></script>
+<script src="~/Scripts/imagesLoaded.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        var $grid = $('.packery-gallery').packery({
+            itemSelector: '.gallery-image'
+        });
+        // layout Packery after each image loads
+        $grid.imagesLoaded().progress(function () {
+            console.log('repacking');
+            $grid.packery();
+        });        
+    });
+</script>

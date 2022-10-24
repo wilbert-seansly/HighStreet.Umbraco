@@ -1,0 +1,33 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ComponentImageInfoBox>
+@using Umbraco.Web.Models;
+@{
+    var title = Model.Title;
+    var subtitle = Model.SubTitle;
+    var links = Model.Link;
+
+
+    var style = Model.Style.First() as ImageInfoStyleDescriptionBox;
+
+    var theme = style.Theme as Theme;
+    var primaryColor = "";
+    var secondaryColor = "";
+    if (theme != null)
+    {
+        primaryColor = theme.PrimaryColor;
+        secondaryColor = theme.SecondaryColor;
+    }
+}
+
+<div class="twg-image-info-box twg-description-box twg-component">
+
+    <div class="row">
+        <div class="col-sm-6">          
+
+        </div>
+
+        <div class="col-sm-6">
+
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,17 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ComponentRichText>
+@using Umbraco.Web.Models;    
+@using ContentModels = Umbraco.Web.PublishedContentModels;
+@{ 
+
+    var richText = Model.RichText;
+
+}
+
+@if (string.IsNullOrWhiteSpace("richText")) { return; }
+
+<div class="twg-component row">
+    <div class="col-sm-12">
+        @Html.Raw(richText)
+    </div>
+    
+</div>

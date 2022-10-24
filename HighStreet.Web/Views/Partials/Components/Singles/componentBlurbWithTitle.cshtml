@@ -1,0 +1,22 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ComponentBlurbWithTitle>
+@using Umbraco.Web.Models;
+@using ContentModels = Umbraco.Web.PublishedContentModels;
+@{ 
+    var title = Model.Title;
+    var description = Model.Description;
+}
+
+<div class="twg-component twg-blurb-with-title">
+    <div class="row">
+        <div class="hidden-sm col-md-2"></div>
+        <div class="col-sm-12 col-md-8 content">
+            <div class="title typewriter">
+                @title.ToUpper()
+            </div>
+            <div class="blurb">
+                @description
+            </div>
+        </div>
+        <div class="hidden-sm col-md-2"></div>
+    </div>
+</div>

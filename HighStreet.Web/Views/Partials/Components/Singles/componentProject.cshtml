@@ -1,0 +1,14 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using Umbraco.Web.Models;
+@{
+    var projectPage = Model.Content.GetPropertyValue<IPublishedContent>("projectPage");
+    var project_url = projectPage != null ? projectPage.Url : "";
+    var image = Model.Content.GetPropertyValue<IPublishedContent>("image");
+    var image_url = image != null ? image.Url : "";
+}
+
+<a href="@project_url">
+    <div class="c-project">
+        <img src="@image_url" />
+    </div>
+</a>

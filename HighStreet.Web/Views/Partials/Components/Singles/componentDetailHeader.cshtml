@@ -1,0 +1,70 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ComponentDetailHeader>
+@{ 
+    var title = Model.Title;
+    var description = Model.Description;
+    var anchorLinkFolder = Model.AnchorLinks;
+    IEnumerable<AnchorLink> anchorLinks = new List<AnchorLink>();
+    if (anchorLinkFolder != null)
+    {
+        anchorLinks = anchorLinkFolder.Children().OfType<AnchorLink>();
+    }
+
+
+    var currentPage = Umbraco.AssignedContentItem.OfType<BasePage>();
+
+    var theme = Model.Theme as Theme;
+
+    var primaryColor = theme != null ? theme.PrimaryColor : "#454B43";
+    var secondaryColor = theme != null ? theme.SecondaryColor : "#888C86";
+}
+
+<div class="twg-component">
+
+    <div class="row">
+
+        <div class="col-sm-12">
+
+            <div class="intro-container row">
+
+                <div class="category col-sm-12 col-md-2">
+
+                    @if (anchorLinks != null && anchorLinks.Any())
+                    {
+                        <div class="anchor-links">
+                            @{ 
+                                var i = 0;
+                            }
+                            @foreach(var link in anchorLinks)
+                            {
+
+                                var pageLink = link.Link != null && link.Link.Any() ? link.Link.First() : null;
+
+                                var href = pageLink != null ? pageLink.Link : "#" + link.ElementId;
+
+                                var highlighted = link.Highlighted;
+
+                                var color = highlighted ? primaryColor : secondaryColor;
+
+                                <div class="anchor-link">
+                                    <a href="@href" style="color: @color;">@link.DisplayName.ToUpper()</a>
+                                </div>
+                            }
+                        </div>
+                    }
+
+                </div>
+
+                <div class="intro col-sm-12 col-md-8">
+                    <h1>@title.ToUpper()</h1>
+                    <div class="description">
+                        @Html.Raw(description)
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

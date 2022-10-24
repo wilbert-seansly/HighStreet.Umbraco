@@ -1,0 +1,23 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using Umbraco.Web.Models
+@{
+    var components = Model.Content.GetPropertyValue<IList<IPublishedContent>>("component");
+}
+
+@if (components != null && components.Any())
+{
+    foreach(var component in components)
+    {
+        var partialPath = "~/views/partials/components/" + component.ContentType.Alias + ".cshtml";
+        
+        @try
+        {
+            @Html.Partial(partialPath, component)
+        } catch(Exception e)
+        {
+            @Html.Partial("~/views/partials/components/singles/" + component.ContentType.Alias + ".cshtml", component);
+        }
+        
+    }
+
+}

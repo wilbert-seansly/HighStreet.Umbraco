@@ -1,0 +1,36 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+    Layout = "_Master.cshtml";
+
+    var teamMemberName = Model.Content.HasValue("displayName") ?
+        Model.Content.GetPropertyValue<string>("displayName") : Model.Content.Name;
+    var teamMemberTitle = Model.Content.GetPropertyValue<string>("title");
+
+    var teamMemberHeadline = String.Format("{0}{1}", 
+        teamMemberName, 
+        string.IsNullOrWhiteSpace(teamMemberTitle) ? "" : String.Format(", {0}", teamMemberTitle));
+    var teamMemberImage = Model.Content.HasProperty("image") ? Model.Content.GetPropertyValue<IPublishedContent>("image").Url : "";
+    var teamMemberBio = Model.Content.HasProperty("bio") ? Html.Raw(Model.Content.GetPropertyValue<string>("bio")) : Html.Raw("");
+}
+
+<div class="twg-content-grid">
+    <div class="container">
+        <div class="row clearfix">
+            <div class="col-md-12 column">
+                <div>
+                    <h1>@teamMemberHeadline</h1>
+                </div>
+            </div>
+            <div class="col-md-6 column">
+                <div>
+                    <img src="@teamMemberImage" alt="" />
+                </div>
+            </div>
+            <div class="col-md-6 column">
+                <div>
+                    @teamMemberBio
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

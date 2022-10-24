@@ -1,0 +1,87 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using HighStreet.Web.Models;
+@using Newtonsoft.Json;
+@using Umbraco.Web.Models;
+@{
+    var embedCode = Model.Content.HasValue("embedCode") ? Model.Content.GetPropertyValue<string>("embedCode") : string.Empty;
+
+    IPublishedContent settings = Umbraco.TypedContentAtXPath("*/site/*[@nodeTypeAlias = 'siteSettings']").FirstOrDefault();
+
+    var socialLinks = new Dictionary<string, string>();
+
+    if (settings != null)
+    {
+        if (settings.HasValue("facebook"))
+        {
+            socialLinks.Add("facebook", settings.GetPropertyValue<string>("facebook"));
+        }
+        if (settings.HasValue("instagram"))
+        {
+            socialLinks.Add("instagram", settings.GetPropertyValue<string>("instagram"));
+        }
+        if (settings.HasValue("twitter"))
+        {
+            socialLinks.Add("twitter", settings.GetPropertyValue<string>("twitter"));
+        }
+    }
+
+    var apiUrl = Model.Content.HasValue("apiUrl") ? Model.Content.GetPropertyValue<string>("apiUrl") : string.Empty;
+    System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
+
+    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(apiUrl);
+    HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+    var instagramPostList = new List<InstagramPost>();
+    try
+    {
+        using (var reader = new StreamReader(response.GetResponseStream()))
+        {
+            var serializer = JsonConvert.DeserializeObject<dynamic>(reader.ReadToEnd());
+            foreach (var post in serializer.posts)
+            {
+                instagramPostList.Add(new InstagramPost() { Image = post.image, Url = post.url, Text = post.text });
+            }
+        }
+    } catch (Exception e)
+    {
+
+    }
+}
+
+    <div class="twg-component">
+
+        @if (socialLinks.Any())
+        {
+            <div class="sticky-links row">
+                @foreach (KeyValuePair<string, string> entry in socialLinks)
+                {
+                    var text = entry.Key == "facebook" ? "FRIEND<br /> US" : entry.Key == "twitter" ? "KEEP UP<br /> WITH US" : entry.Key == "instagram" ? "FOLLOW<br /> US" : string.Empty;
+                    <div class="col-sm-12 col-md-6 col-lg-4">
+                        <a href="@entry.Value" target="_blank" rel="noreferrer noopener">
+                            <div class="sticky-link">
+                                <div class="content-container">
+                                    <p class="title">@Html.Raw(text)</p>
+                                    <img class="icon" src="~/images/social-icons/@(entry.Key).png" alt="logo: @(entry.Key)" />
+                                    <p class="hash">#HighStATL</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                }
+
+            </div>
+        }
+
+        @if (instagramPostList.Any())
+        {
+            <div class="posts row">
+                @foreach (var post in instagramPostList)
+                {
+                    <div class="post col-sm-12 col-md-6 col-lg-4">
+                        <a href="@post.Url" target="_blank" rel="noreferrer noopener" aria-label="@post.Text"><div class="insta-post-image" style="background-image: url('@post.Image');"></div></a>
+                    </div>
+                }
+            </div>
+        }
+
+    </div>

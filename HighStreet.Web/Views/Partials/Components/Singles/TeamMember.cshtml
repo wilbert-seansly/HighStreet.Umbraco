@@ -1,0 +1,17 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using Umbraco.Web.Models;
+@{
+    var displayName = Model.Content.GetPropertyValue<string>("displayName");
+    var name = string.IsNullOrEmpty(displayName) ? Model.Content.Name : displayName;
+    
+    var image = Model.Content.GetPropertyValue<IPublishedContent>("image");
+    var imageUrl =  image != null ? image.Url : "";
+    
+    var link = Model.Content.Url;
+}
+
+<a href="@link">
+    <div class="c-team-member">
+        <img src="@imageUrl" />
+    </div> 
+</a>

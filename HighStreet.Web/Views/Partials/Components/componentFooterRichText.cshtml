@@ -1,0 +1,16 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using Umbraco.Web.Models;
+@{
+
+    var textContent = Model.Content.GetPropertyValue("text");
+
+}
+
+@if (textContent != null && textContent != string.Empty) 
+{
+
+    <div class="c-footer-richtext">
+        @textContent
+    </div>
+
+}

@@ -1,0 +1,27 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using Umbraco.Web.Models;
+@{
+     var image = Model.Content.GetPropertyValue<IPublishedContent>("image");
+    var links = Model.Content.GetPropertyValue<RelatedLinks>("link");
+}
+<div class="c-body-tile">
+    @if (image != null)
+    { 
+    <div>
+        <img src="@image.Url" alt="@image.GetPropertyValue("altText")" class="img-circle">
+    </div>
+    }
+    <h3 class="c-body-tile__headline bodyTileHeight">@Model.Content.GetPropertyValue("headline")</h3>
+    
+    @Html.Raw(Model.Content.GetPropertyValue("description"))
+
+    @if (links != null && links.Any())
+    {
+        foreach (var link in links)
+        {
+        <div class="align-bottom">
+            <a href="@link.Link" target="@((link.NewWindow) ? "_blank" : "")" class="btn btn-primary">@link.Caption</a>
+        </div>
+        }
+    }
+</div>

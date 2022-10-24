@@ -1,0 +1,8 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using Umbraco.Web.Models
+@{
+    var content = Model.Content.GetPropertyValue<IPublishedContent>("linkedContent");
+    var partialPath = "~/views/partials/components/singles/" + content.ContentType.Alias + ".cshtml";
+}
+
+@Html.Partial(partialPath, content)

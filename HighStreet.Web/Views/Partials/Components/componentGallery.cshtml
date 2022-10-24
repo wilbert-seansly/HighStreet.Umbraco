@@ -1,0 +1,28 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using Umbraco.Web.Models
+@{
+
+    var headline = Model.Content.GetPropertyValue("headline");
+
+    var images = Model.Content.GetPropertyValue<IList<IPublishedContent>>("images");
+
+}
+
+
+        
+@if (images != null && images.Any()) 
+{
+    
+    <div class="c-gallery row">
+        @foreach (var image in images) 
+        {
+            
+            <div class="c-gallery-image col-md-3">
+                <a href="@image.Url" data-lightbox="roadtrip"><img src="@image.Url" /></a>
+            </div>
+            
+        }
+    </div>
+    
+} 
+    

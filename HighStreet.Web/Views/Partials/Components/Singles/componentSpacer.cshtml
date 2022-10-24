@@ -1,0 +1,12 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ComponentSpacer>
+
+@{ 
+    var height = string.IsNullOrWhiteSpace(Model.Height) ? "10px" : Model.Height;
+    var width = string.IsNullOrWhiteSpace(Model.Width) ? "100%" : Model.Width;
+    var cssClasses = Model.CssClasses;
+    var cssId = Model.CssId;
+}
+
+<div class="twg-spacer @cssClasses" id="@cssId" style="height: @height; width: @width;">
+
+</div>

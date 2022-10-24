@@ -1,0 +1,39 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ComponentFluidGallery>
+@{ 
+
+    var intro = Model.Intro;
+    var galleryItems = Model.GalleryLinks != null ? Model.GalleryLinks.Children().OfType<GalleryLink>() : new List<GalleryLink>();
+}
+
+<div class="twg-component twg-fluid-gallery">
+
+    @if (!string.IsNullOrWhiteSpace(Model.Intro.ToString()))
+    {
+        <div class="fluid-gallery-intro">
+            @Html.Raw(intro)
+        </div>
+
+    }
+
+    @if (galleryItems.Any())
+    {
+        foreach (var galleryItem in galleryItems)
+        {
+            var link = galleryItem.Link.FirstOrDefault();
+
+            var imageUrl = galleryItem.Image != null ? galleryItem.Image.Url : string.Empty;
+
+            if (string.IsNullOrWhiteSpace(imageUrl)) { continue; }
+
+            <div class="fluid-gallery-link">
+                <div class="gallery-link-container">
+                    <div class="gallery-link-content">
+                        <a href="@link.Link" target="_blank" rel="noreferrer noopener"><img class="gallery-link-image" src="@imageUrl" /></a>
+                    </div>
+                </div>
+                
+            </div>
+        }
+    }
+
+</div>

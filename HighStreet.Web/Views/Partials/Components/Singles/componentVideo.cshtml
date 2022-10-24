@@ -1,0 +1,39 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ComponentVideo>
+
+@{
+    var video = Model.Video;
+    var previewImage = Model.PreviewImage;
+    var autoplay = Model.Autoplay;
+
+    var isBackOffice = HttpContext.Current.Request.Url.AbsoluteUri.Contains("umbraco");
+
+    var embedCode = Model.EmbedCode;
+}
+@if (!string.IsNullOrEmpty(embedCode))
+{
+    <div class="twg-component twg-video">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="player-aspect-ratio">
+                    @Html.Raw(embedCode)
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else if (video == null)
+{
+    return;
+}
+else
+{
+    <div class="twg-component twg-video">
+        <div class="row">
+            <div class="col-sm-12">
+                <video width="100%" @(autoplay ? "autoplay" : "") controls poster="@previewImage.Url" style="cursor: pointer; object-fit:cover;" @(isBackOffice ? "onclick='this.play();'" : "")>
+                    <source src="@video.Url" />
+                </video>
+            </div>
+        </div>
+    </div>
+}

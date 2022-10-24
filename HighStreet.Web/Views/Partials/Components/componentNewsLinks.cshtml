@@ -1,0 +1,46 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using Umbraco.Web.Models;
+
+@{
+    var newslinks = Model.Content.GetPropertyValue<IList<IPublishedContent>>("links");
+    var headline = Model.Content.GetPropertyValue("headline");
+}
+
+<div class="c-news-links-container">
+
+    <div class="c-headline">@headline</div>
+    @if (newslinks != null && newslinks.Any()) 
+    {
+        <div class="c-news-links flex">
+            @foreach (var newslink in newslinks) 
+            {
+
+                var links = newslink.GetPropertyValue<RelatedLinks>("link");
+
+                var image = newslink.GetPropertyValue<IPublishedContent>("image");
+                
+                var image_url = image != null ? image.Url : "";
+            
+                if (links == null || !links.Any()) 
+                {
+                    continue;
+                }
+                
+                var link = links.First();
+                
+                <div class="c-news-link on-click-link-url" data-link-url="@link.Link">
+                    <div class="c-news-link-content">
+                        <img src="@image_url" />
+                        <div class="link-title">
+                            <a href="@link.Link">@link.Caption</a> 
+                            <div class="c-news-link-icon"></div>
+                        </div>
+                    </div>
+                </div>
+
+            }
+        </div>
+    }
+</div>
+
+

@@ -1,0 +1,397 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ComponentSlider>
+@using Umbraco.Web.Models
+@{
+    var slidesFolder = Model.Slides;
+    var sliderId = Model.SliderId;
+    var height = Model.Height;
+
+    var buttonsInside = Model.NextPrevInside;
+
+    var paginationStyle = Model.SliderNavigationStyle as PaginationButtons;
+    var hasPagination = paginationStyle != null;
+    var panBackground = Model.PanBackground;
+    var marginTop = string.IsNullOrWhiteSpace(Model.MarginTop) ? "0" : Model.MarginTop;
+
+    var aspectRatio = (string.IsNullOrWhiteSpace(height)) ? Model.AspectRatio : string.Empty;
+
+    var backgroundSize = string.IsNullOrWhiteSpace(Model.BackgroundSize) ? "cover" : Model.BackgroundSize;
+
+    var sidesPagination = paginationStyle != null && paginationStyle.Positioning == "Sides";
+
+    var aspectRatioValues = new Dictionary<string, string>() { { "16:9", "56.25%" }, { "43.25%", "43.25%" }, { "55 : 136 (vertical)", "100vh" } };
+    var aspectRatioValue = aspectRatioValues.ContainsKey(aspectRatio) ? aspectRatioValues[aspectRatio] : aspectRatio;
+    var isVertical = aspectRatioValue == "100vh";
+
+    var paginationTop = paginationStyle != null && paginationStyle.Positioning == "Top";
+
+    var sliderBackgroundColor = Model.BackgroundColor;
+
+    var sliderDirection = String.IsNullOrWhiteSpace(Model.SliderDirection) ? "horizontal" : Model.SliderDirection;
+
+    var imagesClickable = Model.ImagesClickable;
+
+    }
+
+    @if (buttonsInside)
+    {
+    <style>
+
+        #@(sliderId) {
+
+        }
+
+        .c-slider-container .next {
+            right: 50px;
+        }
+
+        .c-slider-container .prev {
+            left: 50px;
+        }
+    </style>
+}
+
+<style>
+
+    #@(sliderId) {
+        height: @(string.IsNullOrWhiteSpace(aspectRatioValue) ? height : "auto");
+    }
+
+    .swiper-pagination.top {
+        position:absolute;
+        top:-38px;
+    }
+
+    .aspect-ratio {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;        
+    }
+
+    .no-max-height {
+        max-height: none !important;
+    }
+
+    .vertical-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: 0;
+    }
+
+    #@(sliderId) .slide-image-container {
+        background-size: @backgroundSize !important;
+        background-repeat: no-repeat;
+    }
+
+    .vert-slide {
+        flex-grow: 1;
+        width: 100%;
+        position: relative;
+    }
+
+    .vert-slide .swiper-container {
+        height: 100%;
+    }
+
+</style>
+@{ 
+
+}
+
+    <div class="c-slider-container twg-component" style="margin-top: @(marginTop);
+    padding-top: @aspectRatioValue;
+    margin-top: @(paginationTop ? "38px" : "0");
+    background-color: @sliderBackgroundColor;
+    ">
+
+
+        @Html.Raw(isVertical ? "<div class='vertical-container'>" : "")
+
+            @Html.Raw(sidesPagination ? "<div class=\"row\">" : "")
+
+                @if (sidesPagination)
+                {
+                    var paginationTitle = paginationStyle.PaginationTitle;
+                    var paginationColor = paginationStyle.TextColor;
+                    <div class="col-sm-12 col-lg-4">
+                        <div class="swiper-pagination sides">
+                            @if (!string.IsNullOrWhiteSpace(paginationTitle)) { <div class="title" style="color: @paginationColor">@paginationTitle</div> }
+                            @Html.Partial("~/Views/Partials/Components/Slider Styles/paginationButtons.cshtml")
+                        </div>
+                    </div>
+                }
+
+            @Html.Raw(sidesPagination ? "</div>" : "")
+
+            @Html.Raw(sidesPagination ? "<div class=\"row " + (isVertical ? "vert-slide" : "") + "\">" : "")
+
+            @if (sidesPagination) { @Html.Raw("<div class=\"" + (!string.IsNullOrWhiteSpace(aspectRatio) ? "aspect-ratio" : "") + " col-12 d-lg-block offset-md-4 col-md-8\">")}
+                <div id="@sliderId" class="swiper-container @(!string.IsNullOrWhiteSpace(aspectRatio) ? "aspect-ratio" : "") @(isVertical ? "no-max-height" : "")">
+                    <!-- Additional required wrapper -->
+                    <div class="swiper-wrapper">
+                        <!-- Slides -->
+
+                        @foreach (var slide in slidesFolder.Children().OfType<Slide>())
+                        {
+                            var backgroundImage = slide.Image as Image;
+                            var imageAltText = "";
+                            if (backgroundImage != null)
+                            {
+                                imageAltText = backgroundImage.AltText;
+                            }
+                            var backgroundImageUrl = backgroundImage != null ? backgroundImage.Url : "";
+
+                            <div class="swiper-slide @(isVertical ? "no-max-height" : "")">
+                                
+                                
+                                <div class="container h-100">
+                                    <div class="row h-100">
+                                        <div class="col-sm-12 h-100">
+                                            
+                                            <div class="slide-content">
+                                                <img @Html.Raw(imagesClickable ? "data-action=\"zoom\"" : "") src="@backgroundImageUrl" style="position:absolute;top:0;left:0;right:0;bottom:0;object-fit:contain;" />
+                                                @{
+                                                    var statSlide = slide as SlideWithCustomStats;
+                                                    var slideWithCenteredText = slide as SlideWithCenteredText;
+                                                }
+                                                @if (statSlide != null)
+                                                {
+                                                    var stats = statSlide.StatsFolder != null ? statSlide.StatsFolder.Children().OfType<SlideStat>() : new List<SlideStat>();
+                                                    var textColor = statSlide.TextColor;
+                                                    var title = statSlide.Title;
+                                                    var subTitle = statSlide.Subtitle;
+                                                    var backgroundColor = statSlide.BackgroundColor;
+                                                    var hoverBackgroundColor = statSlide.HoverBackgroundColor;
+                                                    var guid = Guid.NewGuid();
+                                                    var link = statSlide.Link != null && statSlide.Link.Count() == 1 ? statSlide.Link.First() : null;
+                                                    var linkUrl = link != null ? link.Link : "";
+                                                    var hoverTextColor = statSlide.HoverTextColor;
+                                                    var textColorForButton = statSlide.TextColorButton;
+                                                    var sliderTitleColor = string.IsNullOrWhiteSpace(statSlide.TitleTextColor) ? textColor : statSlide.TitleTextColor;
+                                                    var textcolor = statSlide.TextColor;
+                                                    var fillBottomUp = statSlide.FillDirection == "Bottom up";
+                                                    var borderColor = statSlide.BorderColor;
+                                                    <div class="twg-component twg-stat-render" style="color:@textcolor;" id="stat-render-@(guid)">
+                                                        <style>
+                                                        #stat-render-@(guid) {
+                                                            border-color: @borderColor;
+                                                        }
+                                                        </style>
+
+                                                        @if (fillBottomUp)
+                                                        {
+                                                            <style>
+                                                            #stat-render-@(guid) .stat-row {
+                                                                border-top: 1px solid;
+                                                            }
+                                                            #stat-render-@(guid) .stat-row:first-child {
+                                                                border-top: none;
+                                                            }
+                                                            </style>
+                                                        }
+                                                        else
+                                                        {
+                                                            <style>
+                                                            #stat-render-@(guid) .stat-row {
+                                                                border-bottom: 1px solid;
+                                                            }
+                                                            #stat-render-@(guid) .stat-row:last-child {
+                                                                border-bottom: none;
+                                                            }
+                                                            </style>
+                                                        }
+                                                        <div class="title-area">
+                                                            <div class="title" style="color:@sliderTitleColor;">
+                                                                @title
+                                                            </div>
+                                                        </div>
+                                                        <div class="slide-stats d-lg-none d-flex">
+                                                            <div class="stats-container">
+                                                                @{
+                                                                    var index = 0;
+                                                                }
+                                                                @foreach (var stat in stats)
+                                                                {
+                                                                    @Html.Raw(index % 2 == 0 ? "<div class='stat-row' style='" + (!string.IsNullOrEmpty(textcolor) ? "border-color: " + borderColor + ";" : "") + "'> " : "");
+                                                                    <div class="stat">
+                                                                        <div class="txt-line-1 @(stat.TextLine1Big ? "stat-big" : "")">@stat.TextLine1</div>
+                                                                        <div class="txt-line-2 @(stat.TextLine2Big ? "stat-big" : "")">@stat.TextLine2</div>
+                                                                    </div>
+                                                                    @Html.Raw(index++ % 2 != 0 ? "</div>" : "");
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        <div class="slide-stats d-none d-lg-flex">
+                                                            <div class="stats-container">
+                                                                @{
+                                                                    index = fillBottomUp ? stats.Count() % 4 : 0;
+                                                                    var count = 0;
+                                                                }
+                                                                @if (fillBottomUp)
+                                                                {@Html.Raw("<div class='stat-row' style='" + (!string.IsNullOrEmpty(textcolor) ? "border-color: " + textcolor + ";" : "") + "'> ");
+                                                            }
+                                                                @foreach (var stat in stats)
+                                                                {
+                                                                    @Html.Raw(index % 4 == 0 ? "<div class='stat-row' style='" + (!string.IsNullOrEmpty(textcolor) ? "border-color: " + textcolor + ";" : "") + "'> " : "");
+                                                                    <div class="stat">
+                                                                        <div class="txt-line-1 @(stat.TextLine1Big ? "stat-big" : "")">@stat.TextLine1</div>
+                                                                        <div class="txt-line-2 @(stat.TextLine2Big ? "stat-big" : "")">@stat.TextLine2</div>
+                                                                    </div>
+                                                                    @Html.Raw(index++ % 4 == 3 ? "</div>" : "");
+                                                                    count++;
+                                                                    if (count == stats.Count() && (index - 1) % 4 != 3)
+                                                                    { @Html.Raw("</div>");
+                                                                }
+                                                            }
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <style>
+
+                                                    #click-learn-more-@(guid) {
+                                                        color: @textColorForButton;
+                                                        background-color: @backgroundColor;
+                                                        padding: 10px 15px;
+                                                        font-family: NewParisSkyline-Bold;
+                                                        font-size: 14px;
+                                                    }
+                                                    #click-learn-more-@(guid):hover {
+                                                        background-color: @hoverBackgroundColor;
+                                                        color: @hoverTextColor;
+                                                    }
+
+                                                    </style>
+                                                    <div class="cta-content">
+                                                        <a href="@linkUrl" style="text-decoration: none;">
+                                                            <div id="click-learn-more-@(guid)" class="click-learn-more" style="border: 1px solid #707070;">
+                                                                <p>CLICK TO LEARN MORE</p>
+                                                            </div>
+                                                        </a>
+                                                    </div>
+                                                }
+                                                else if (slideWithCenteredText != null)
+                                                {
+                                                    var centeredText = slideWithCenteredText.Text;
+                                                    var textColor = slideWithCenteredText.Color;
+                                                    <div class="centered-text" style="@(!string.IsNullOrWhiteSpace(textColor) ? "color: " + textColor + ";" : "")">
+                                                        @centeredText
+                                                    </div>
+                                                }
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        }
+
+                    </div>
+                    
+                </div>
+            @if (sidesPagination) { @Html.Raw("</div></div>") }
+        
+        <!-- If we need pagination -->
+        @if (hasPagination && !sidesPagination)
+        {
+            <div class="swiper-pagination @(paginationTop ? "top" : "")">
+                @Html.Partial("~/Views/Partials/Components/Slider Styles/paginationButtons.cshtml")
+            </div>
+        }
+
+        @Html.Raw(isVertical ? "</div>" : "")
+
+        @if (!hasPagination)
+        {
+            <div class="swiper-navigation d-none d-md-block">
+                <div class="@(sliderId)-next next"></div>
+                <div class="@(sliderId)-prev prev"></div>
+            </div>
+        }
+
+
+
+    </div>
+
+
+
+
+
+<script>
+    var slideNames = @Html.Raw(Json.Encode(slidesFolder.Children().Select(x => x.Name).ToArray()));
+
+    var navigation = {
+        nextEl: '.@(sliderId)-next',
+        prevEl: '.@(sliderId)-prev',
+    };
+
+    var pagination = {
+        el: '#pagination-@sliderId',
+        clickable: true,
+        renderBullet: function (index, className) {
+            return `<div class="swiper-pagination-bullet">${slideNames[index]}</div>`;
+        },
+    };
+
+    var options = {
+        direction: '@sliderDirection.ToLower()',
+        parallax: true,
+        speed: 700,
+        simulateTouch: false,
+        on: {
+            init: function () {
+                let swiper = this;
+                for (let i = 0; i < swiper.slides.length; i++) {
+                    $(swiper.slides[i]).find('.slide-content')
+                        .attr({
+                            'data-swiper-parallax': .75 * swiper.width,
+                        });
+                    $(swiper.slides[i]).find('.slide-image-container')
+                        .attr({
+                            'data-swiper-parallax': 0.45 * swiper.width,
+                            'data-swiper-opacity': 0.5
+                        });
+                    $(swiper.slides[i]).find('.slide-stats, .centered-text')
+                        .attr({
+                            'data-swiper-parallax': 0.45 * swiper.width,
+                            'data-swiper-opacity': 0.8
+                        });
+                }
+            },
+        },
+        loop: true,
+        autoplay: {
+            delay: 3000,
+        },
+
+    };
+</script>
+    @if (hasPagination)
+    {
+        <script>
+            options.pagination = pagination;
+        </script>
+            }
+            else
+            {
+        <script>
+            options.navigation = navigation;
+        </script>
+    }
+
+<script>
+    var swiper = new Swiper('#@sliderId', options);
+    
+
+
+
+</script>
+

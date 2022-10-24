@@ -1,0 +1,18 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using Umbraco.Web.Models;
+@{
+    var image = Model.Content.GetPropertyValue<IPublishedContent>("heroImage");
+    var links = Model.Content.GetPropertyValue<IPublishedContent>("link");
+    
+    var image_url = image != null ? image.Url : "";
+    var link_url = links != null ? links.Url : "";
+    var headline = Model.Content.GetPropertyValue("headline");
+}
+
+<div class="c-featured-container">
+    <div class="c-featured on-click-link-url" data-link-url="@link_url">
+        
+        <img src="@image_url" />
+    
+    </div>
+</div>

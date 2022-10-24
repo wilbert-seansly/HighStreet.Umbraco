@@ -1,0 +1,79 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ComponentLeasingInfo>
+
+@{ 
+    var contacts = Model.Contacts;
+    var title = Model.Title;
+    var color = Model.Color;
+    var fileDownload = Model.FileDownload;
+    var guid = Guid.NewGuid();
+}
+
+
+
+<div class="detail-box twg-component">
+    <div class="row">
+        @if (contacts != null && contacts.Children.Any())
+        {
+            <div class="col-sm-6 pr-sm-1">
+                <div class="leasing-contacts">
+                    <div class="subtitle">
+                        @Model.Title.ToUpper()
+
+                        @foreach (var child in contacts.Children())
+                        {
+                            var contact = child as LeasingContact;
+                            if (contact == null) { continue; }
+
+                            <div class="leasing-contact">
+                                @contact.DisplayName <br />
+                                <a href="tel:@contact.PhoneNumber">@contact.PhoneNumber</a><br />
+                                <a href="mailto:@contact.EmailAddress">@contact.EmailAddress</a>
+                            </div>
+                        }
+                    </div>
+                </div>              
+            </div>
+        }
+        else
+        {
+            <div class="col-sm-6 pr-sm-1"></div>
+        }
+        @if (fileDownload != null)
+        {
+            <style>
+                #doc-download-@(guid):hover                    
+                {
+                    background-color: @color;
+                }
+                    
+            </style>
+
+            <div class="col-sm-6 pl-sm-1">
+                <div class="doc-download" id="doc-download-@guid">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-6">
+                            <div class="image" style="background-color: @color;">
+                                <img class="logo" src="~/images/HS_LOGO_WHITE.png" alt="highstreet logo" />
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-6 px-md-0">
+                            <a href="@fileDownload.Url" class="no-decoration" download="@fileDownload.Name" target="_blank" rel="noreferrer noopener">
+                                <div class="doc-download-content" id="doc-download-content-@guid">
+                                    <div class="subtitle">
+                                        DOWNLOAD
+                                    </div>
+                                    <div class="title">
+                                        @fileDownload.Name
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+    </div>
+</div>
+
+    

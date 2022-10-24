@@ -1,0 +1,61 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ComponentNewsLinks>
+
+@{ 
+    var links = Model.NewsLinks != null ? Model.NewsLinks.Children().OfType<NewsLink>() : new List<NewsLink>();
+    var title = Model.Title;
+
+}
+
+
+<div class="twg-component twg-news-links-container">
+    
+    @if (!string.IsNullOrWhiteSpace(title))
+    {
+        <div class="title">@title</div>
+    }
+
+    @if (links.Any())
+    {
+        <div class="news-links">
+
+            @foreach(var link in links)
+            {
+                var relatedLink = link.Link.FirstOrDefault();
+                if (relatedLink == null) { continue; }
+                var displayTitle = relatedLink.Caption;
+                var url = relatedLink.Link;
+                var openInNewTab = relatedLink.NewWindow;
+                var date = link.Date;
+                var source = link.Source;
+                var image = link.Image;
+
+                <div class="news-link">
+                    <a href="@url" target="@(openInNewTab ? "_blank" : "")">
+                        <div class="row">
+                            <div class="col-sm-12 col-md-4">
+                                <div class="news-link-image">
+                                    @if (image != null)
+                                    {
+                                        <img src="@image.Url" />
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-md-6">
+                                <div class="news-link-info">
+                                    <div class="news-link-title">
+                                        @displayTitle
+                                    </div>
+                                    <div class="news-link-source">
+                                        @date | @source
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+
+        </div>
+    }
+
+</div>

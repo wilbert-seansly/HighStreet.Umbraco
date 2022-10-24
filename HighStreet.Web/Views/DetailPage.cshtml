@@ -1,0 +1,170 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage<DetailPage>
+@{
+    Layout = "_Master.cshtml";
+
+
+    var category = Model.Content.HasValue("category") ? Model.Content.GetPropertyValue<string>("category") : string.Empty;
+    var title = Model.Content.HasValue("title") ? Model.Content.GetPropertyValue<string>("title") : string.Empty;
+    var description = Model.Content.HasValue("description") ? Model.Content.GetPropertyValue<string>("description") : string.Empty;
+    var image = Model.Content.HasValue("image") ? Model.Content.GetPropertyValue<IPublishedContent>("image").Url : string.Empty;
+    var video = Model.Content.HasValue("video") ? Model.Content.GetPropertyValue<IPublishedContent>("video").Url : string.Empty;
+
+    var hasVideo = !string.IsNullOrWhiteSpace(video);
+    var poster = Model.Content.HasValue("videoImagePlaceholder") ? Model.Content.GetPropertyValue<IPublishedContent>("videoImagePlaceholder").Url : string.Empty;
+
+    var theme = Model.Content.HasValue("theme") ? Model.Content.GetPropertyValue<IPublishedContent>("theme") : null;
+    var themeColor = theme != null && theme.HasValue("primaryColor") ? theme.GetPropertyValue<string>("primaryColor") : "white";
+    var themeBackgroundImage = theme != null && theme.HasValue("backgroundImage") ? theme.GetPropertyValue<IPublishedContent>("backgroundImage").Url : string.Empty;
+
+    var detailsFolder = Model.Content.Children().FirstOrDefault(x => x.DocumentTypeAlias == "detailItemFolder");
+
+
+    var pageName = Model.Content.Name.ToUpper();
+
+    var isRetail = pageName == "RETAIL";
+    var isOffice = pageName == "OFFICE";
+
+    var leasingContacts = Model.Content.LeasingContacts != null ? Model.Content.LeasingContacts.Children() : new List<LeasingContact>();
+}
+    <div class="detail-page">
+
+        <div class="container twg-component">
+
+            <div class="row">
+
+                <div class="col-sm-12">
+
+                    <div class="intro-container row">
+
+                        <div class="category col-sm-2" style="color: @themeColor">
+                            @category
+                        </div>
+
+                        <div class="intro col-sm-8">
+                            <h1>@title.ToUpper()</h1>
+                            <div class="description">
+                                @Html.Raw(description)
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="twg-component container-fluid details-container" style="background-image: url('@themeBackgroundImage'); background-repeat: repeat;">
+            <div class="container px-0">
+                @if (!string.IsNullOrWhiteSpace(image) && !hasVideo)
+                {
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <img class="overview-image" src="@image" />
+                        </div>
+                    </div>
+                }
+                else if (hasVideo)
+                {
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <video width="100%" controls poster="@poster" style="cursor: pointer; object-fit:cover;">
+                                <source src="@video" />
+                            </video>
+                        </div>
+                    </div>
+                }
+
+                @if(leasingContacts.Any() || Model.Content.FileDownload != null)
+                {
+                    <div style="height:100px;"></div>
+                    <div class="detail-box twg-component">
+                        <div class="row">
+                            @if (leasingContacts.Any())
+                            {
+                                <div class="col-sm-6 pr-sm-2">
+                                    <div class="leasing-contacts">
+                                        <div class="subtitle">
+                                            @Model.Content.Name.ToUpper() LEASING CONTACTS
+
+                                            @foreach (var content in leasingContacts)
+                                            {
+                                                var contact = content as LeasingContact;
+                                                if (contact == null) { continue; }
+                                                <div class="leasing-contact">
+                                                    @contact.DisplayName <br />
+                                                    <a href="tel:@contact.PhoneNumber">@contact.PhoneNumber</a><br />
+                                                    <a href="mailto:@contact.EmailAddress">@contact.EmailAddress</a>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+
+                                </div>
+                            }
+                            @if (Model.Content.FileDownload != null)
+                            {
+                                <div class="col-sm-6 pl-sm-2">
+                                    <div class="doc-download @Model.Content.Theme.Name.ToLower()">
+                                        <div class="row">
+                                            <div class="col-sm-12 col-md-6">
+                                                <div class="image">
+                                                    <img class="logo" src="~/images/tmp/logo-@(Model.Content.Theme.Name.ToLower()).png" alt="logo" />
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-12 col-md-6 px-md-0">
+                                                <a href="@Model.Content.FileDownload.Url" class="no-decoration" download="@Model.Content.FileDownload.Name" target="_blank">
+                                                    <div class="doc-download-content">
+                                                        <div class="subtitle">
+                                                            DOWNLOAD
+                                                        </div>
+                                                        <div class="title">
+                                                            @Model.Content.FileDownload.Name
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
+                    </div>
+                }
+
+                @if (detailsFolder != null && detailsFolder.Children.Any())
+                {
+                    var details = detailsFolder.Children().Where(x => x.DocumentTypeAlias == "detail");
+                    <div class="detail-list">
+                        @foreach (var detail in details)
+                        {
+                            var detailImage = detail.HasValue("image") ? detail.GetPropertyValue<IPublishedContent>("image").Url : string.Empty;
+                            var detailTitle = detail.HasValue("title") ? detail.GetPropertyValue<string>("title") : string.Empty;
+                            var detailDescription = detail.HasValue("description") ? detail.GetPropertyValue<string>("description") : string.Empty;
+
+
+                            <div class="detail-listing twg-component">
+                                <div class="row">
+                                    <div class="col-sm-12 col-md-6">
+                                        <div class="detail-info">
+                                            <div class="detail-title" style="color: @themeColor">@detailTitle</div>
+                                            <div class="detail-description">@Html.Raw(detailDescription)</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-6">
+                                        <div class="detail-image">
+                                            <img src="@detailImage" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>

@@ -1,0 +1,144 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Footer>
+@using Umbraco.Web.Models;
+@using System.Text.RegularExpressions;
+@using ContentModels = Umbraco.Web.PublishedContentModels;
+
+@{
+
+    var backgroundColor = Model.BackgroundColor;
+
+    var textColor = Model.TextColor;
+
+    var site = Model.AncestorOrSelf(1) as Site;
+    var settings = site.SiteSettings.First() as SiteSettings;
+
+    var contactPhone = settings.ContactPhone;
+    if (contactPhone.Length == 10)
+    {
+        contactPhone = Regex.Replace(contactPhone, @"(\d{3})(\d{3})(\d{4})", "$1.$2.$3");
+    }
+    var contactEmail = settings.ContactEmail;
+    var socialLinks = new Dictionary<string, string>();
+    if (settings.HasValue("facebook"))
+    {
+        socialLinks.Add("facebook", settings.Facebook);
+    }
+    if (settings.HasValue("instagram"))
+    {
+        socialLinks.Add("instagram", settings.Instagram);
+    }
+    if (settings.HasValue("twitter"))
+    {
+        socialLinks.Add("twitter", settings.Twitter);
+    }
+    if (settings.HasValue("linkedIn"))
+    {
+        socialLinks.Add("linkedIn", settings.LinkedIn);
+    }
+
+    var legalLinks = settings.LegalLinks;
+
+
+    
+    var fairHousingText = settings.FairHousingText;
+    var fairHousingImage = "/images/tmp/house-icon.png";
+    var fairHousingLink = settings.FairHousingLink;
+}
+
+<style>
+    .twg-footer {
+        background-color: @backgroundColor;
+    }
+
+    .c-footer-component {
+        color: @textColor;
+    }
+</style>
+
+<footer class="twg-footer container-fluid">
+    <div class="row">
+
+        <div class="footer-content col-sm-12 d-sm-flex d-md-none">
+            <img id="gid-logo" src="~/images/gid.png" alt="GID" />
+
+        </div>
+        <div class="footer-content col-sm-12 d-sm-flex d-md-none">
+            <div class="contact-info">                
+                @if (!string.IsNullOrWhiteSpace(contactPhone)) {<span><a href="tel:@contactPhone" target="_blank" rel="noreferrer noopener">@contactPhone</a></span>}
+                @if (!string.IsNullOrWhiteSpace(contactPhone) && !string.IsNullOrWhiteSpace(contactEmail)) {<span class="separator">|</span>} 
+                @if (!string.IsNullOrWhiteSpace(contactEmail)) {<span><a href="mailto:@contactEmail" target="_blank" rel="noreferrer noopener">@contactEmail</a></span>}
+            </div>
+        </div>
+        <div class="footer-content col-md-6 d-md-flex d-none">
+            <a href="https://www.gid.com/" target="_blank"><img id="gid-logo" src="~/images/gid.png" alt="GID" /></a>
+            <div class="contact-info">
+                @if (!string.IsNullOrWhiteSpace(contactPhone)){<span><a href="tel:@contactPhone" target="_blank" rel="noreferrer noopener">@contactPhone</a></span>} 
+                @if(!string.IsNullOrWhiteSpace(contactPhone) && !string.IsNullOrWhiteSpace(contactEmail)) {<span class="separator d-md-none d-lg-block">|</span>} 
+                @if (!string.IsNullOrWhiteSpace(contactEmail)) {<span><a href="mailto:@contactEmail" target="_blank" rel="noreferrer noopener">@contactEmail</a></span>}
+            </div>
+        </div>
+
+        <div class="right-side col-sm-12 col-md-6">
+            <div class="row">
+                <div class="footer-content col-sm-12 d-sm-flex d-md-none">
+                    <a href="#" target="_blank" >@("@HighStATL")</a>
+                </div>
+                <div class="footer-content col-sm-12 d-sm-flex d-md-none">
+
+                    <div class="twg-social-icons">
+                        @foreach (KeyValuePair<string, string> entry in socialLinks)
+                        {
+                            <a class="social-icon-link" aria-label="link: Highstreet @entry.Key" href="@entry.Value" rel="noreferrer noopener" target="_blank"><img class="social-icon" src="~/images/social-icons/@(entry.Key).png" alt="logo: @entry.Key" /></a>
+                        }
+                    </div>
+                </div>
+                <div class="footer-content medium-footer-content d-none d-md-flex col-md-12">
+                    <div class="at-link" href="#" target="_blank">Follow us:</div>
+                    <div class="twg-social-icons">
+                        @foreach (KeyValuePair<string, string> entry in socialLinks)
+                        {
+                            <a class="social-icon-link" aria-label="link: Highstreet @entry.Key" href="@entry.Value" rel="noreferrer noopener" target="_blank"><img class="social-icon" src="~/images/social-icons/@(entry.Key).png" alt="logo: @entry.Key" /></a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-divider"></div>
+    <div class="row">
+        <div class="col-sm-12 col-md-5">
+            @if (legalLinks != null && legalLinks.Children().Any())
+            {
+                var legalLinksChildren = legalLinks.Children().ToList();
+                <div class="legal-links">
+                    @for (var i = 0; i < legalLinksChildren.Count(); i++)
+                    {
+                        var legalLink = legalLinksChildren[i] as LegalLink;
+
+                        if (legalLink == null) { continue; }
+
+                        var displayLink = legalLink.Link.Count() > 0 ? legalLink.Link.First() as RelatedLink :null;
+
+                        if (displayLink == null) { continue; }
+
+                        if (i > 0)
+                        {
+                            <span class="legal-link-separator">|</span>
+                        }
+                        <div class="legal-link">
+                            <a href="@displayLink.Link" target="@(displayLink.NewWindow ? "_blank" : "")">@displayLink.Caption</a>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+        <div class="col-sm-12 col-md-7">
+            <div class="fair-housing-container">
+                <div class="text"><a href="@fairHousingLink" target="_blank" rel="noreferrer noopener">@fairHousingText</a></div>
+                <div class="image">
+                    <a href="@fairHousingLink" target="_blank" rel="noreferrer noopener"><img src="@fairHousingImage" alt="fair-housing-icon" /></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>

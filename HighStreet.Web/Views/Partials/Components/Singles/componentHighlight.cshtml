@@ -1,0 +1,139 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ComponentHighlight>
+@using Umbraco.Web.Models;
+@{
+    var largeText = Model.HighlightLargeText;
+    var smallText = Model.HighlightSmallText;
+    var description = Model.Description;
+    var image = Model.Image;
+    var imageOnRight = Model.ImageOnRight;
+    var moreInformationLink = Model.MoreInformationLink;
+    var highlightBackgroundColor = Model.HighlightBackgroundColor;
+    var hoverHighlightColor = Model.HoverHighlightColor;
+    var hoverSecondaryColor = Model.HoverSecondaryColor;
+
+    var highlightTextColor = Model.HighlightTextColor;
+    var descriptionTextColor = Model.DescriptionTextColor;
+
+    var guid = Guid.NewGuid();
+
+    var link = Model.MoreInformationLink != null && Model.MoreInformationLink.Count() > 0 ? Model.MoreInformationLink.First() as RelatedLink : null;
+    var linkUrl = link != null ? link.Link : "";
+    var linkCaption = link != null ? link.Caption : "";
+
+}
+
+    <style>
+
+    .twg-highlight .highlight-@guid {
+        background-color: @highlightBackgroundColor;
+    }
+    .twg-highlight:hover .highlight-@guid {
+        background-color: @hoverHighlightColor;
+    }
+    .twg-highlight:hover .secondary-@guid {
+        background-color: @hoverSecondaryColor;
+    }
+    .twg-highlight .secondary-@guid .description,
+    .twg-highlight .secondary-@guid .more-info-link a{
+        color: @descriptionTextColor;
+    }
+    .twg-highlight .highlight-@guid {
+        color: @highlightTextColor;
+    }
+
+    </style>
+
+<div class="twg-component twg-highlight">
+
+    <div class="row ml-0 mr-0">
+        <div class="col-sm-12 col-md-6 px-0">
+            @if (imageOnRight)
+            {
+                <div style="height:100%;">
+                    @HighlightSide(largeText, smallText, description, imageOnRight, guid, link)
+                </div>
+
+            }
+            else
+            {
+                <div>
+                    @ImageSide(image)
+                </div>
+            }
+        </div>
+        <div class="col-sm-12 col-md-6 px-0">
+            @if (imageOnRight)
+            {
+                <div>
+                    @ImageSide(image)
+                </div>
+
+            }
+            else
+            {
+                <div style="height: 100%;">
+                    @HighlightSide(largeText, smallText, description, imageOnRight, guid, link)
+                </div>
+
+            }
+
+        </div>
+    </div>
+
+</div>
+
+@helper HighlightSide(string bigText, string smallText, string description, bool highlightOnLeft, Guid guid, RelatedLink link)
+{
+
+
+    if (highlightOnLeft)
+    {
+        <div class="highlight-side left">
+            @highlightHighlightSide(bigText, smallText, guid)
+            @highlightSecondarySide(description, guid, link)
+        </div>
+    } 
+    else
+    {
+        <div class="highlight-side right">
+            @highlightSecondarySide(description, guid, link)
+            @highlightHighlightSide(bigText, smallText, guid)
+        </div>
+    }
+
+}
+
+@helper highlightHighlightSide(string bigText, string smallText, Guid guid)
+{
+    <div class="highlight-@guid highlight">
+        <div class="text-container">
+            <div class="big-text">@bigText</div>
+            <div class="small-text">@smallText</div>
+        </div>
+    </div>
+}
+
+@helper highlightSecondarySide(string description, Guid guid, RelatedLink link)
+{    
+    <div class="secondary-@guid secondary">       
+        <div class="description">
+            @description
+        </div>
+        @if (link != null)
+        {
+            <div class="more-info-link">
+                <a href="@link.Link" target="@(link.NewWindow ? Html.Raw("_blank") : Html.Raw("_self"))">@link.Caption</a> 
+            </div>
+        }        
+    </div>
+}
+
+@helper ImageSide(IPublishedContent image)
+{
+    var mediaImage = image as Image;
+    var altText = mediaImage != null ? mediaImage.AltText : "";
+
+    <div class="image-side">
+        <img class="image" src="@image.Url" alt="@altText" />
+    </div>
+}

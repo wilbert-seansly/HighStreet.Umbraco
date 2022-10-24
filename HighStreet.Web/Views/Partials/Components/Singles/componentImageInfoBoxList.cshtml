@@ -1,0 +1,41 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ComponentImageInfoBoxList>
+@{
+
+    var boxes = Model.Boxes;
+}
+
+@if (boxes == null || !boxes.Children().Any())
+{
+    return;
+}
+
+
+<div class="twg-image-info-box-list">
+        @{
+            var index = 0;
+        }    
+        @foreach (var child in boxes.Children())
+        {
+            var box = child as ComponentImageInfoBox;
+            if (box == null) { return; }
+            var style = box.Style;
+            if (style == null)
+            {
+                <p>style is null</p>
+                continue;
+            }
+
+            @Umbraco.If(index % 2 == 0, "<div class='row'>")
+
+            <div class="col-12 col-md-6 @(index % 2 == 0 ? "pr-md-1" : "pl-md-1")">
+                @{
+                    Html.RenderPartial("~/Views/Partials/Components/Image Info Styles/" + style.First().ContentType.Alias + ".cshtml", box);
+                }
+            </div>            
+
+            @Umbraco.If(index % 2 != 0, "</div>")
+
+            index++;
+        }
+
+</div>

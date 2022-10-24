@@ -1,0 +1,31 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage<ContentModels.ContentPage>
+@using ContentModels = Umbraco.Web.PublishedContentModels;
+@{
+	Layout = "_Master.cshtml";
+	
+	var bodyTiles = Model.Content.GetPropertyValue<IList<IPublishedContent>>("bodyTiles");
+}
+
+@if (bodyTiles != null && bodyTiles.Any())
+{
+    <div class="container">
+        @foreach(var bodyTile in bodyTiles)
+        {
+            @Html.Partial("~/views/partials/components/" + bodyTile.ContentType.Alias + ".cshtml", bodyTile)
+        }
+    </div>
+}
+
+@section footerScripts {
+    <script type="text/javascript">
+        
+        $(document).ready(function() {
+           $(".on-click-link-url").click(function() {
+              var link = $(this).attr("data-link-url");
+              window.location.href = link;
+           });
+        });
+        
+    </script>
+ 
+}

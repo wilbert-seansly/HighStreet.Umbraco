@@ -1,0 +1,57 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ComponentSlider>
+@using Umbraco.Web.Models;
+
+@{ 
+    var style = Model.SliderNavigationStyle as PaginationButtons;
+
+    var guid = Guid.NewGuid();
+
+    var buttonStyle = style.ButtonStyle;
+    var activeColor = style.ActiveBackgroundColor;
+    var inactiveColor = style.InactiveBackgroundColor;
+}
+
+    <style>
+
+    #@(Model.SliderId) {
+        
+    }
+
+
+    #pagination-@Model.SliderId {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    #pagination-@(Model.SliderId) .swiper-pagination-bullet {
+        background-color: @style.InactiveBackgroundColor;
+        width: 25%;
+        height: 100%;
+        border-radius: 0;
+        font-size: 19px;
+        padding: 5px;
+        color: white;
+        opacity: 1;
+        min-width: 180px;
+    }
+    #pagination-@Model.SliderId .swiper-pagination-bullet-active{
+        background-color: @style.ActiveBackgroundColor;
+    }
+
+    .swiper-pagination.sides .title {
+        font-size: 16px;
+        font-family: NewParisSkyline-Bold;
+        text-align: left;
+        margin-bottom: 44px;
+    }
+    .swiper-pagination.sides #pagination-@Model.SliderId .swiper-pagination-bullet {
+        height: auto;
+        margin-top: 8px;
+    }
+    </style>
+
+<div id="pagination-@Model.SliderId" class="pagination-container">
+
+
+
+</div>

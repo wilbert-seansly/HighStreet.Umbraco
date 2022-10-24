@@ -1,0 +1,66 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ComponentImageInfoBox>
+@using Umbraco.Web.Models;
+@{
+    var backgroundImage = Model.Image;
+    var backgroundColor = "";
+    var hoverBackgroundColor = "";
+    var richText = Model.RichText;
+    var logo = Model.Logo;
+    var linkUrl = "";
+
+    var style = Model.Style;
+}
+
+@if (style != null && style.ToList().Count > 0)
+{
+
+    var partialPath = "~/views/partials/components/Image Info Styles/" + style.First().ContentType.Alias + ".cshtml";
+
+    @Html.Partial(partialPath, Model)
+
+    return;
+}
+
+<style>
+
+    .twg-image-info-box .image-box {
+        background-color: @backgroundColor;
+    }
+    .twg-image-info-box:hover .image-box {
+        background-color: @hoverBackgroundColor;
+    }
+</style>
+
+@if (backgroundImage != null)
+{
+    <style>
+        .twg-image-info-box .image-box {
+            background: url('@backgroundImage.Url');
+        }
+    </style>
+}
+
+<div class="twg-component twg-image-info-box">
+
+    <div class="row ml-0 mr-0">
+        
+        <div class="col-sm-12 col-md-6 px-0">
+            <a href="@linkUrl" target="_blank" rel="noreferrer noopener">
+                <div class="image-box">
+                    @if (logo != null)
+                    {
+                        <img src="@logo.Url" />
+                   }
+                </div>
+            </a>
+        </div>
+
+        <div class="col-sm-12 col-md-6 px-0">
+            <div class="text-box">
+                @Html.Raw(richText)
+            </div>
+        </div>
+
+    </div>
+
+</div>

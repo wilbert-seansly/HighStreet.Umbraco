@@ -1,0 +1,26 @@
+﻿[
+  {
+    "outputFile": "css/style.css",
+    "inputFile": "css/style.scss"
+  },
+  {
+    "outputFile": "font-awesome/scss/fontawesome.css",
+    "inputFile": "font-awesome/scss/fontawesome.scss"
+  },
+  {
+    "outputFile": "font-awesome/scss/brands.css",
+    "inputFile": "font-awesome/scss/brands.scss"
+  },
+  {
+    "outputFile": "css/style-without-bootstrap.css",
+    "inputFile": "css/style-without-bootstrap.scss"
+  },
+  {
+    "outputFile": "css/admin-css.css",
+    "inputFile": "css/admin-css.scss"
+  },
+  {
+    "outputFile": "css/twg-styles.css",
+    "inputFile": "css/twg-styles.scss"
+  }
+]

@@ -1,0 +1,14 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using Umbraco.Web.Models;
+@{
+
+    var image = Model.Content.GetPropertyValue<IPublishedContent>("image");
+}
+
+@if (image != null) 
+{
+    <div class="c-footer-image">
+        <img src="@image.Url" />
+    </div>
+}
+

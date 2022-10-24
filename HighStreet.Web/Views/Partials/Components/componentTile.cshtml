@@ -1,0 +1,41 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ComponentTile>
+@using Umbraco.Web.Models
+@using HighStreet.Web.Models
+@using ContentModels = Umbraco.Web.PublishedContentModels;
+
+@{
+    var bodyTiles = Model.ComponentTiles;
+}
+
+@if (bodyTiles != null && bodyTiles.Any())
+{
+    foreach (var bodyTile in bodyTiles)
+    {
+        var partialPath = "~/views/partials/components/singles/" + bodyTile.ContentType.Alias + ".cshtml";
+
+        var componentSubscribeForm = bodyTile as ComponentSubscribeForm;
+        if (componentSubscribeForm != null)
+        {
+            var model = new HighStreet.Web.Models.SubscriptionFormViewModel()
+            {
+                Title = componentSubscribeForm.Title,
+                Description = componentSubscribeForm.Description,
+                Model = new SubscriptionFormModel()
+            };
+
+            @Html.Partial(partialPath, model);
+            continue;
+        }
+
+        @Html.Partial(partialPath, bodyTile)
+
+    }
+
+}
+
+@section footerScripts {
+
+    <script type="text/javascript">
+        location.hash = '#' + '@TempData["anchor"]';
+    </script>
+} 
